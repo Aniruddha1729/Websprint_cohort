@@ -66,10 +66,19 @@ export default function Profile() {
   // Avatar & Banner states (stored locally for logged in user)
   const [avatar, setAvatar] = useState(() => {
     if (isCurrentUser) {
-      return localStorage.getItem("cohort_user_avatar") || defaultProfile.avatar;
+      return localStorage.getItem("cohort_user_avatar") || user?.avatar || defaultProfile.avatar;
     }
     return defaultProfile.avatar;
   });
+
+  useEffect(() => {
+    if (isCurrentUser && user?.avatar) {
+      const savedAvatar = localStorage.getItem("cohort_user_avatar");
+      if (!savedAvatar) {
+        setAvatar(user.avatar);
+      }
+    }
+  }, [user, isCurrentUser]);
 
   const [banner, setBanner] = useState(() => {
     if (isCurrentUser) {

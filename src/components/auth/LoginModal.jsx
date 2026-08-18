@@ -13,9 +13,21 @@ export default function LoginModal({ isOpen, onClose }) {
   const handleGoogleSignIn = async () => {
     if (!agreed) return;
     try {
-      await signInWithPopup(auth, googleProvider);
+      const res = await signInWithPopup(auth, googleProvider);
+      if (res && res.user) {
+        const googlePhoto =
+          res.user.photoURL ||
+          `https://lh3.googleusercontent.com/a/default-user`;
+        const googleUserData = {
+          name: res.user.displayName || "Cohort Student",
+          email: res.user.email || "student@pccoe.edu.in",
+          avatar: googlePhoto,
+        };
+        localStorage.setItem("cohort_google_user", JSON.stringify(googleUserData));
+        localStorage.setItem("cohort_user_avatar", googlePhoto);
+      }
       onClose();
-      navigate("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err) {
       console.error("Google sign in error", err);
       setError("Failed to sign in. Please try again.");

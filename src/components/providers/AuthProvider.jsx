@@ -25,12 +25,27 @@ export default function AuthProvider({ children }) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
+    const savedGoogleUser = localStorage.getItem("cohort_google_user");
+    let googleUserObj = null;
+    if (savedGoogleUser) {
+      try {
+        googleUserObj = JSON.parse(savedGoogleUser);
+      } catch (e) {}
+    }
+
+    const currentAvatar =
+      localStorage.getItem("cohort_user_avatar") ||
+      googleUserObj?.avatar ||
+      "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80";
+
+    const currentName = googleUserObj?.name || "Shubhang Doley";
+    const currentEmail = googleUserObj?.email || "shubhang.doley@pccoe.edu.in";
+
     if (!auth || typeof onAuthStateChanged !== "function") {
-      // Local development default user state
       setUser({
-        name: "Shubhang Doley",
-        email: "shubhang.doley@pccoe.edu.in",
-        avatar: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80",
+        name: currentName,
+        email: currentEmail,
+        avatar: currentAvatar,
         ...DEFAULT_COHORT_DATA,
       });
       setIsAuthenticated(true);
@@ -41,22 +56,21 @@ export default function AuthProvider({ children }) {
     try {
       const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
+          const userAvatar = firebaseUser.photoURL || currentAvatar;
           const userData = {
-            name: firebaseUser.displayName || "Cohort User",
-            email: firebaseUser.email,
-            avatar:
-              firebaseUser.photoURL ||
-              `https://api.dicebear.com/7.x/avataaars/svg?seed=${firebaseUser.uid}`,
+            name: firebaseUser.displayName || currentName,
+            email: firebaseUser.email || currentEmail,
+            avatar: userAvatar,
             ...DEFAULT_COHORT_DATA,
           };
+          localStorage.setItem("cohort_user_avatar", userAvatar);
           setUser(userData);
           setIsAuthenticated(true);
         } else {
-          // Default authenticated student user for local development
           setUser({
-            name: "Shubhang Doley",
-            email: "shubhang.doley@pccoe.edu.in",
-            avatar: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80",
+            name: currentName,
+            email: currentEmail,
+            avatar: currentAvatar,
             ...DEFAULT_COHORT_DATA,
           });
           setIsAuthenticated(true);
@@ -68,9 +82,9 @@ export default function AuthProvider({ children }) {
     } catch (err) {
       console.warn("Auth state observer fallback:", err);
       setUser({
-        name: "Shubhang Doley",
-        email: "shubhang.doley@pccoe.edu.in",
-        avatar: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80",
+        name: currentName,
+        email: currentEmail,
+        avatar: currentAvatar,
         ...DEFAULT_COHORT_DATA,
       });
       setIsAuthenticated(true);
