@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Heart,
   MessageSquare,
@@ -88,15 +89,15 @@ export default function DashboardHome() {
         <div className="w-full rounded-2xl bg-card border border-border/80 shadow-md p-6 space-y-5">
           {/* Post Header: Avatar, Author, Username, Date, Heart */}
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3.5">
+            <Link to="/dashboard/profile/chirag" className="flex items-center gap-3.5 group cursor-pointer">
               <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=ChiragFerwani"
+                src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80"
                 alt="Chirag Ferwani"
-                className="w-11 h-11 rounded-full border border-primary/30 bg-secondary object-cover shrink-0"
+                className="w-11 h-11 rounded-full border border-primary/30 bg-secondary object-cover shrink-0 group-hover:scale-105 transition-transform"
               />
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-heading text-base font-bold text-foreground">Chirag Ferwani</h3>
+                  <h3 className="font-heading text-base font-bold text-foreground group-hover:text-primary transition-colors">Chirag Ferwani</h3>
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
                     Lead
                   </span>
@@ -105,7 +106,7 @@ export default function DashboardHome() {
                   @chirag · <span className="text-muted-foreground/80">Today at 2:15 PM</span>
                 </p>
               </div>
-            </div>
+            </Link>
 
             <button
               onClick={handleLike}

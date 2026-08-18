@@ -204,15 +204,19 @@ export default function DashboardLayout() {
             </div>
             <div className="space-y-2">
               {rightFriends.map((f, i) => (
-                <div key={i} className="p-2 rounded-xl hover:bg-secondary/70 flex items-center gap-2.5 transition-all">
+                <Link
+                  key={i}
+                  to={`/dashboard/profile/${f.username.replace('@', '')}`}
+                  className="p-2 rounded-xl hover:bg-secondary/70 flex items-center gap-2.5 transition-all group"
+                >
                   <div className={`w-8 h-8 rounded-full ${f.avatarColor} text-white font-bold text-xs flex items-center justify-center shrink-0`}>
                     {f.name[0]}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-foreground truncate">{f.name}</p>
+                    <p className="text-xs font-bold text-foreground group-hover:text-primary transition-colors truncate">{f.name}</p>
                     <p className="text-[10px] text-muted-foreground truncate">{f.username}</p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -231,16 +235,55 @@ export default function DashboardLayout() {
             </div>
             <div className="space-y-2">
               {rightConnects.map((cn, i) => (
-                <div key={i} className="p-2 rounded-xl hover:bg-secondary/70 flex items-center gap-2.5 transition-all">
+                <Link
+                  key={i}
+                  to={`/dashboard/profile/${cn.username.replace('@', '')}`}
+                  className="p-2 rounded-xl hover:bg-secondary/70 flex items-center gap-2.5 transition-all group"
+                >
                   <div className={`w-8 h-8 rounded-full ${cn.avatarColor} text-white font-bold text-xs flex items-center justify-center shrink-0`}>
                     {cn.name[0]}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-foreground truncate">{cn.name}</p>
+                    <p className="text-xs font-bold text-foreground group-hover:text-primary transition-colors truncate">{cn.name}</p>
                     <p className="text-[10px] text-muted-foreground truncate">{cn.username}</p>
                   </div>
-                </div>
+                </Link>
               ))}
+            </div>
+          </div>
+
+          <div className="border-t border-border/50" />
+
+          {/* C/CALENDAR */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-xs font-bold font-heading tracking-wider uppercase text-foreground">
+                C/CALENDAR
+              </span>
+              <Link to="/dashboard/calendar" className="text-muted-foreground hover:text-primary transition-colors">
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="p-3 rounded-xl bg-secondary/40 border border-border/40 text-xs text-muted-foreground text-center font-medium">
+              No upcoming events
+            </div>
+          </div>
+
+          <div className="border-t border-border/50" />
+
+          {/* C/HEADSUP */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-xs font-bold font-heading tracking-wider uppercase text-foreground">
+                C/HEADSUP
+              </span>
+              <Link to="/dashboard/headsup" className="text-muted-foreground hover:text-primary transition-colors">
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 font-medium leading-relaxed flex items-start gap-2">
+              <span className="shrink-0 text-amber-500 font-bold">⚠️</span>
+              <span>Important: Full access will soon require PCCOE account login</span>
             </div>
           </div>
         </div>

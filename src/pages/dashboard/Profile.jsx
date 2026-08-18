@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Pencil,
   MessageSquare,
@@ -18,9 +19,11 @@ import {
   Building,
   GraduationCap,
   Globe,
+  Heart,
 } from "lucide-react";
 import { useAuth } from "../../components/providers/AuthProvider";
-import { useNavigate } from "react-router-dom";
+import { userProfiles } from "../../data/userProfiles";
+import Silk from "../../components/ui/Silk";
 
 function LinkedinIcon(props) {
   return (
@@ -30,52 +33,117 @@ function LinkedinIcon(props) {
   );
 }
 
-function GithubIcon(props) {
-  return (
-    <svg className="w-4.5 h-4.5 fill-current" viewBox="0 0 24 24" {...props}>
-      <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2Z"/>
-    </svg>
-  );
-}
-
 export default function Profile() {
+  const { username } = useParams();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState("posts");
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const avatarInputRef = useRef(null);
   const bannerInputRef = useRef(null);
 
-  const defaultAvatar = "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80";
+  // Normalize route username parameter or default to current student
+  const targetUsername = username ? username.toLowerCase() : "shubhang24";
+  const defaultProfile = userProfiles[targetUsername] || {
+    name: targetUsername,
+    username: targetUsername,
+    role: "PCCOE Student",
+    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
+    banner: null,
+    bio: "Student @ Pimpri Chinchwad College of Engineering (PCCOE), Pune.",
+    department: "Engineering Student",
+    linkedin: "https://linkedin.com",
+    github: "https://github.com",
+    stats: { communities: 4, followers: 42, following: 18, flex: 3 },
+    isCurrentUser: false,
+    posts: [],
+  };
 
+  const isCurrentUser = targetUsername === "shubhang24" || targetUsername === "046_shuhbang_doley";
+
+  // Avatar & Banner states (stored locally for logged in user)
   const [avatar, setAvatar] = useState(() => {
-    return localStorage.getItem("cohort_user_avatar") || defaultAvatar;
+    if (isCurrentUser) {
+      return localStorage.getItem("cohort_user_avatar") || defaultProfile.avatar;
+    }
+    return defaultProfile.avatar;
   });
 
   const [banner, setBanner] = useState(() => {
-    return localStorage.getItem("cohort_user_banner") || null;
+    if (isCurrentUser) {
+      return localStorage.getItem("cohort_user_banner") || defaultProfile.banner;
+    }
+    return defaultProfile.banner;
   });
 
-  // Profile Form Data state from localStorage
+  // Profile Data state (stored locally for logged in user)
   const [profileData, setProfileData] = useState(() => {
-    const saved = localStorage.getItem("cohort_user_profile_data");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {}
+    if (isCurrentUser) {
+      const saved = localStorage.getItem("cohort_user_profile_data");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {}
+      }
     }
     return {
-      name: user?.name || "046_Shuhbang_Doley",
-      username: "shubhang24",
-      bio: "Computer Engineering Student @ PCCOE | Web Developer & Tech Enthusiast 🚀",
-      department: "Computer Engineering (TE)",
-      linkedin: "https://linkedin.com",
-      github: "https://github.com",
+      name: defaultProfile.name,
+      username: defaultProfile.username,
+      bio: defaultProfile.bio,
+      department: defaultProfile.department,
+      linkedin: defaultProfile.linkedin,
+      github: defaultProfile.github,
     };
   });
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState(profileData);
+
+  useEffect(() => {
+    // When username parameter changes, update state to match target user
+    const found = userProfiles[targetUsername] || defaultProfile;
+    if (isCurrentUser) {
+      const saved = localStorage.getItem("cohort_user_profile_data");
+      if (saved) {
+        try {
+          setProfileData(JSON.parse(saved));
+        } catch (e) {
+          setProfileData({
+            name: found.name,
+            username: found.username,
+            bio: found.bio,
+            department: found.department,
+            linkedin: found.linkedin,
+            github: found.github,
+          });
+        }
+      } else {
+        setProfileData({
+          name: found.name,
+          username: found.username,
+          bio: found.bio,
+          department: found.department,
+          linkedin: found.linkedin,
+          github: found.github,
+        });
+      }
+      setAvatar(localStorage.getItem("cohort_user_avatar") || found.avatar);
+      setBanner(localStorage.getItem("cohort_user_banner") || found.banner);
+    } else {
+      setProfileData({
+        name: found.name,
+        username: found.username,
+        bio: found.bio,
+        department: found.department,
+        linkedin: found.linkedin,
+        github: found.github,
+      });
+      setAvatar(found.avatar);
+      setBanner(found.banner);
+    }
+  }, [username, targetUsername]);
 
   const handleAvatarUpload = (e) => {
     const file = e.target.files[0];
@@ -88,7 +156,9 @@ export default function Profile() {
       reader.onloadend = () => {
         const base64String = reader.result;
         setAvatar(base64String);
-        localStorage.setItem("cohort_user_avatar", base64String);
+        if (isCurrentUser) {
+          localStorage.setItem("cohort_user_avatar", base64String);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -105,31 +175,60 @@ export default function Profile() {
       reader.onloadend = () => {
         const base64String = reader.result;
         setBanner(base64String);
-        localStorage.setItem("cohort_user_banner", base64String);
+        if (isCurrentUser) {
+          localStorage.setItem("cohort_user_banner", base64String);
+        }
       };
       reader.readAsDataURL(file);
     }
   };
 
   const resetAvatar = () => {
-    setAvatar(defaultAvatar);
-    localStorage.removeItem("cohort_user_avatar");
+    setAvatar(defaultProfile.avatar);
+    if (isCurrentUser) {
+      localStorage.removeItem("cohort_user_avatar");
+    }
   };
 
   const resetBanner = () => {
-    setBanner(null);
-    localStorage.removeItem("cohort_user_banner");
+    setBanner(defaultProfile.banner);
+    if (isCurrentUser) {
+      localStorage.removeItem("cohort_user_banner");
+    }
   };
 
   const handleOpenEditModal = () => {
-    setEditForm(profileData);
+    let extractedBranch = "Computer Engineering";
+    let extractedYear = "TE";
+
+    if (profileData.department) {
+      if (profileData.department.includes("Information")) extractedBranch = "Information Technology";
+      else if (profileData.department.includes("Artificial") || profileData.department.includes("AI")) extractedBranch = "Artificial Intelligence & Data Science (AI&DS)";
+      else if (profileData.department.includes("Electronics") || profileData.department.includes("ENTC")) extractedBranch = "Electronics & Telecommunication (ENTC)";
+      else if (profileData.department.includes("Mechanical")) extractedBranch = "Mechanical Engineering";
+      else if (profileData.department.includes("Civil")) extractedBranch = "Civil Engineering";
+      else if (profileData.department.includes("Computer")) extractedBranch = "Computer Engineering";
+
+      if (profileData.department.includes("FE")) extractedYear = "FE";
+      else if (profileData.department.includes("SE")) extractedYear = "SE";
+      else if (profileData.department.includes("TE")) extractedYear = "TE";
+      else if (profileData.department.includes("BE")) extractedYear = "BE";
+    }
+
+    setEditForm({
+      ...profileData,
+      branch: extractedBranch,
+      year: extractedYear,
+    });
     setIsEditModalOpen(true);
   };
 
   const handleSaveProfile = (e) => {
     e.preventDefault();
     setProfileData(editForm);
-    localStorage.setItem("cohort_user_profile_data", JSON.stringify(editForm));
+    if (isCurrentUser) {
+      localStorage.setItem("cohort_user_profile_data", JSON.stringify(editForm));
+    }
     setIsEditModalOpen(false);
   };
 
@@ -138,31 +237,32 @@ export default function Profile() {
     navigate("/login");
   };
 
+  const stats = defaultProfile.stats || { communities: 5, followers: 0, following: 3, flex: 0 };
   const statCards = [
     {
       id: "communities",
-      count: 5,
+      count: stats.communities,
       label: "COMMUNITIES",
       icon: "👥",
       color: "from-blue-500/10 to-indigo-500/10",
     },
     {
       id: "followers",
-      count: 0,
+      count: isFollowing ? stats.followers + 1 : stats.followers,
       label: "FOLLOWERS",
       icon: "👥",
       color: "from-purple-500/10 to-pink-500/10",
     },
     {
       id: "following",
-      count: 3,
+      count: stats.following,
       label: "FOLLOWING",
       icon: "🧩",
       color: "from-teal-500/10 to-emerald-500/10",
     },
     {
       id: "flex",
-      count: 0,
+      count: stats.flex,
       label: "FLEX",
       icon: "🚩",
       color: "from-amber-500/10 to-orange-500/10",
@@ -171,21 +271,25 @@ export default function Profile() {
 
   return (
     <div className="w-full min-h-full pb-16 flex flex-col relative select-none bg-background">
-      {/* Hidden File Inputs */}
-      <input
-        type="file"
-        ref={avatarInputRef}
-        onChange={handleAvatarUpload}
-        accept="image/*"
-        className="hidden"
-      />
-      <input
-        type="file"
-        ref={bannerInputRef}
-        onChange={handleBannerUpload}
-        accept="image/*"
-        className="hidden"
-      />
+      {/* Hidden File Inputs for Current User */}
+      {isCurrentUser && (
+        <>
+          <input
+            type="file"
+            ref={avatarInputRef}
+            onChange={handleAvatarUpload}
+            accept="image/*"
+            className="hidden"
+          />
+          <input
+            type="file"
+            ref={bannerInputRef}
+            onChange={handleBannerUpload}
+            accept="image/*"
+            className="hidden"
+          />
+        </>
+      )}
 
       {/* Decorative Accents */}
       <div className="absolute top-4 left-6 opacity-20 pointer-events-none text-xs font-mono z-30">
@@ -197,41 +301,51 @@ export default function Profile() {
       {/* ========================================== */}
       <div className="w-full h-[260px] relative overflow-hidden bg-gradient-to-r from-pink-500/30 via-purple-700 to-blue-900 group">
         {banner ? (
-          <img src={banner} alt="Custom Cover Banner" className="w-full h-full object-cover" />
+          <img src={banner} alt="Profile Cover Banner" className="w-full h-full object-cover" />
         ) : (
-          <>
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-pink-500/50 via-purple-600/40 to-transparent" />
-            <div className="absolute -bottom-10 -left-10 w-96 h-96 bg-pink-500/30 rounded-full blur-3xl" />
-            <div className="absolute -top-10 -right-10 w-96 h-96 bg-blue-500/40 rounded-full blur-3xl" />
-          </>
+          <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+            <Silk
+              speed={5}
+              scale={1}
+              color="#b885e4"
+              noiseIntensity={1.5}
+              rotation={0}
+            />
+          </div>
         )}
 
-        {/* Change Banner Button */}
-        <div className="absolute top-6 left-8 flex items-center gap-2">
-          <button
-            onClick={() => bannerInputRef.current?.click()}
-            className="px-3.5 py-1.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md text-white text-xs font-bold flex items-center gap-1.5 shadow-md border border-white/20 transition-all cursor-pointer"
-            title="Change Cover Banner"
-          >
-            <Camera className="w-3.5 h-3.5" />
-            <span>Change Cover</span>
-          </button>
-
-          {banner && (
+        {/* Change Banner Button (Only visible to current user) */}
+        {isCurrentUser && (
+          <div className="absolute top-6 left-8 flex items-center gap-2">
             <button
-              onClick={resetBanner}
-              className="px-3 py-1.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md text-white text-xs font-semibold border border-white/20 transition-all cursor-pointer"
-              title="Reset Banner"
+              onClick={() => bannerInputRef.current?.click()}
+              className="px-3.5 py-1.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md text-white text-xs font-bold flex items-center gap-1.5 shadow-md border border-white/20 transition-all cursor-pointer"
+              title="Change Cover Banner"
             >
-              Reset
+              <Camera className="w-3.5 h-3.5" />
+              <span>Change Cover</span>
             </button>
-          )}
-        </div>
+
+            {banner && (
+              <button
+                onClick={resetBanner}
+                className="px-3 py-1.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md text-white text-xs font-semibold border border-white/20 transition-all cursor-pointer"
+                title="Reset Banner"
+              >
+                Reset
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Top-Right COHORT USER Pill Badge */}
         <div className="absolute top-6 right-8 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center gap-2.5 shadow-md">
-          <img src="/logo-final.png" alt="Cohort Logo" className="w-6 h-6 rounded-full object-cover shadow-xs" />
-          <span className="text-xs font-bold tracking-wider text-white">COHORT USER</span>
+          <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white font-bold font-secondary text-xs">
+            C
+          </div>
+          <span className="text-xs font-bold tracking-wider text-white">
+            {isCurrentUser ? "COHORT USER" : "PCCOE STUDENT"}
+          </span>
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
         </div>
       </div>
@@ -247,19 +361,21 @@ export default function Profile() {
             <div className="w-[150px] h-[145px] rounded-2xl bg-card border-4 border-card shadow-xl overflow-hidden relative">
               <img
                 src={avatar}
-                alt="Profile Avatar"
+                alt={`${profileData.name} Avatar`}
                 className="w-full h-full object-cover"
               />
             </div>
 
-            {/* Bottom-Right Camera Upload Button */}
-            <button
-              onClick={() => avatarInputRef.current?.click()}
-              className="absolute -bottom-1.5 -right-1.5 w-11 h-11 rounded-full bg-primary border-2 border-card text-white flex items-center justify-center shadow-md hover:scale-110 transition-transform cursor-pointer"
-              title="Upload Profile Picture"
-            >
-              <Camera className="w-5 h-5" />
-            </button>
+            {/* Bottom-Right Camera Upload Button (Only for current user) */}
+            {isCurrentUser && (
+              <button
+                onClick={() => avatarInputRef.current?.click()}
+                className="absolute -bottom-1.5 -right-1.5 w-11 h-11 rounded-full bg-primary border-2 border-card text-white flex items-center justify-center shadow-md hover:scale-110 transition-transform cursor-pointer"
+                title="Upload Profile Picture"
+              >
+                <Camera className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           {/* Username & Tag */}
@@ -269,14 +385,14 @@ export default function Profile() {
                 {profileData.name}
               </h1>
 
-              {avatar !== defaultAvatar && (
+              {isCurrentUser && avatar !== defaultProfile.avatar && (
                 <button
                   onClick={resetAvatar}
                   className="px-2.5 py-1 rounded-lg bg-secondary text-muted-foreground hover:text-foreground text-[11px] font-medium border border-border flex items-center gap-1 cursor-pointer"
                   title="Reset to default avatar"
                 >
                   <RefreshCw className="w-3 h-3" />
-                  <span>Reset Avatar</span>
+                  <span>Reset</span>
                 </button>
               )}
             </div>
@@ -294,14 +410,58 @@ export default function Profile() {
 
         {/* Action Buttons Row */}
         <div className="flex items-center gap-2.5 pb-2 shrink-0">
-          <button
-            onClick={handleOpenEditModal}
-            className="h-10 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center gap-2 shadow-md hover:opacity-90 transition-all cursor-pointer"
-            title="Edit Profile"
-          >
-            <Pencil className="w-4 h-4" />
-            <span>Edit Profile</span>
-          </button>
+          {isCurrentUser ? (
+            <>
+              <button
+                onClick={handleOpenEditModal}
+                className="h-10 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center gap-2 shadow-md hover:opacity-90 transition-all cursor-pointer"
+                title="Edit Profile"
+              >
+                <Pencil className="w-4 h-4" />
+                <span>Edit Profile</span>
+              </button>
+
+              <button
+                onClick={handleSignOut}
+                className="h-10 px-4 rounded-xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Sign out</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => setIsFollowing(!isFollowing)}
+                className={`h-10 px-5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer ${
+                  isFollowing
+                    ? "bg-secondary text-foreground border border-border hover:bg-secondary/80"
+                    : "bg-primary text-primary-foreground hover:opacity-90"
+                }`}
+              >
+                {isFollowing ? (
+                  <>
+                    <UserCheck className="w-4 h-4 text-emerald-500" />
+                    <span>Following</span>
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-4 h-4" />
+                    <span>Follow</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={() => navigate("/dashboard/xd")}
+                className="h-10 px-4 rounded-xl bg-card border border-border hover:bg-secondary text-foreground font-bold text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer"
+              >
+                <MessageSquare className="w-4 h-4 text-primary" />
+                <span>Message</span>
+              </button>
+            </>
+          )}
 
           {profileData.linkedin && (
             <a
@@ -315,33 +475,12 @@ export default function Profile() {
             </a>
           )}
 
-          {profileData.github && (
-            <a
-              href={profileData.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 rounded-xl bg-card border border-border/80 hover:bg-secondary text-foreground flex items-center justify-center shadow-sm transition-all"
-              title="GitHub Profile"
-            >
-              <GithubIcon />
-            </a>
-          )}
-
           <button
-            onClick={() => alert("Share Profile Link")}
+            onClick={() => alert(`Profile link for @${profileData.username} copied!`)}
             className="w-10 h-10 rounded-xl bg-card border border-border/80 hover:bg-secondary text-foreground flex items-center justify-center shadow-sm transition-all cursor-pointer"
             title="Share Profile"
           >
             <Share2 className="w-4.5 h-4.5" />
-          </button>
-
-          <button
-            onClick={handleSignOut}
-            className="h-10 px-4 rounded-xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer"
-            title="Sign Out"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Sign out</span>
           </button>
         </div>
       </div>
@@ -394,7 +533,7 @@ export default function Profile() {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Posts (0)
+            Posts ({defaultProfile.posts?.length || 0})
           </button>
 
           <button
@@ -409,23 +548,62 @@ export default function Profile() {
           </button>
         </div>
 
-        <div className="w-full py-16 px-6 rounded-2xl bg-card border border-border/80 shadow-sm flex flex-col items-center justify-center text-center space-y-3">
-          <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center text-muted-foreground text-2xl">
-            ✍️
+        {/* Tab Content List */}
+        {defaultProfile.posts && defaultProfile.posts.length > 0 && activeTab === "posts" ? (
+          <div className="space-y-4 max-w-3xl">
+            {defaultProfile.posts.map((post) => (
+              <div
+                key={post.id}
+                className="p-5 rounded-2xl bg-card border border-border/80 shadow-xs space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={avatar}
+                      alt={profileData.name}
+                      className="w-9 h-9 rounded-full object-cover border border-border"
+                    />
+                    <div>
+                      <h4 className="text-sm font-bold text-foreground">{profileData.name}</h4>
+                      <span className="text-[11px] text-muted-foreground">@{profileData.username} • {post.time}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-sm text-foreground leading-relaxed">
+                  {post.text}
+                </p>
+
+                <div className="flex items-center gap-4 pt-2 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1.5 text-rose-500 font-semibold">
+                    <Heart className="w-4 h-4 fill-rose-500" />
+                    <span>{post.likes}</span>
+                  </div>
+                  <span>•</span>
+                  <span>PCCOE Campus Feed</span>
+                </div>
+              </div>
+            ))}
           </div>
-          <h3 className="font-heading text-lg font-bold text-foreground">
-            No {activeTab} yet
-          </h3>
-          <p className="text-sm text-muted-foreground max-w-md">
-            When you create posts or reply to discussions across Cohort communities, they will appear here on your profile.
-          </p>
-        </div>
+        ) : (
+          <div className="w-full py-16 px-6 rounded-2xl bg-card border border-border/80 shadow-sm flex flex-col items-center justify-center text-center space-y-3">
+            <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center text-muted-foreground text-2xl">
+              ✍️
+            </div>
+            <h3 className="font-heading text-lg font-bold text-foreground">
+              No {activeTab} yet
+            </h3>
+            <p className="text-sm text-muted-foreground max-w-md">
+              When {profileData.name} creates posts or replies to discussions across Cohort communities, they will appear here.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* ========================================== */}
       {/* 5. EDIT PROFILE MODAL                      */}
       {/* ========================================== */}
-      {isEditModalOpen && (
+      {isEditModalOpen && isCurrentUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-lg rounded-3xl bg-card border border-border shadow-2xl p-6 space-y-6 relative overflow-hidden">
             <div className="flex items-center justify-between border-b border-border/60 pb-4">
@@ -447,7 +625,6 @@ export default function Profile() {
             </div>
 
             <form onSubmit={handleSaveProfile} className="space-y-4">
-              {/* Full Name */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-foreground uppercase tracking-wider">Full Name</label>
                 <input
@@ -460,7 +637,6 @@ export default function Profile() {
                 />
               </div>
 
-              {/* Username */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-foreground uppercase tracking-wider">Username</label>
                 <div className="relative flex items-center">
@@ -476,19 +652,64 @@ export default function Profile() {
                 </div>
               </div>
 
-              {/* Department / Branch */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground uppercase tracking-wider">Department & Year</label>
-                <input
-                  type="text"
-                  value={editForm.department}
-                  onChange={(e) => setEditForm({ ...editForm, department: e.target.value })}
-                  className="w-full h-11 px-3.5 rounded-xl bg-secondary/60 border border-border text-foreground text-sm font-medium focus:outline-none focus:border-primary"
-                  placeholder="e.g. Computer Engineering (TE)"
-                />
+              {/* Branch & Year Dropdowns */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-foreground uppercase tracking-wider">
+                    PCCOE Branch
+                  </label>
+                  <select
+                    value={editForm.branch || "Computer Engineering"}
+                    onChange={(e) => {
+                      const selectedBranch = e.target.value;
+                      const currentYear = editForm.year || "TE";
+                      setEditForm({
+                        ...editForm,
+                        branch: selectedBranch,
+                        department: `${selectedBranch} (${currentYear})`,
+                      });
+                    }}
+                    className="w-full h-11 px-3 rounded-xl bg-secondary/60 border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
+                  >
+                    <option value="Computer Engineering">Computer Engineering</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Artificial Intelligence & Data Science (AI&DS)">Artificial Intelligence & Data Science (AI&DS)</option>
+                    <option value="Electronics & Telecommunication (ENTC)">Electronics & Telecommunication (ENTC)</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                    <option value="Civil Engineering">Civil Engineering</option>
+                    <option value="Computer Engineering (Regional)">Computer Engineering (Regional)</option>
+                    <option value="Master of Computer Applications (MCA)">Master of Computer Applications (MCA)</option>
+                    <option value="Master of Business Administration (MBA)">Master of Business Administration (MBA)</option>
+                    <option value="First Year Engineering (FE)">First Year Engineering (FE)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-foreground uppercase tracking-wider">
+                    Year of Study
+                  </label>
+                  <select
+                    value={editForm.year || "TE"}
+                    onChange={(e) => {
+                      const selectedYear = e.target.value;
+                      const currentBranch = editForm.branch || "Computer Engineering";
+                      setEditForm({
+                        ...editForm,
+                        year: selectedYear,
+                        department: `${currentBranch} (${selectedYear})`,
+                      });
+                    }}
+                    className="w-full h-11 px-3 rounded-xl bg-secondary/60 border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
+                  >
+                    <option value="FE">First Year (FE)</option>
+                    <option value="SE">Second Year (SE)</option>
+                    <option value="TE">Third Year (TE)</option>
+                    <option value="BE">Final Year (BE)</option>
+                    <option value="Alumni">Alumni / Graduated</option>
+                  </select>
+                </div>
               </div>
 
-              {/* Bio */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-foreground uppercase tracking-wider">Bio / Tagline</label>
                 <textarea
@@ -500,32 +721,17 @@ export default function Profile() {
                 />
               </div>
 
-              {/* LinkedIn & GitHub */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground uppercase tracking-wider">LinkedIn URL</label>
-                  <input
-                    type="url"
-                    value={editForm.linkedin}
-                    onChange={(e) => setEditForm({ ...editForm, linkedin: e.target.value })}
-                    className="w-full h-10 px-3 rounded-xl bg-secondary/60 border border-border text-foreground text-xs font-medium focus:outline-none focus:border-primary"
-                    placeholder="https://linkedin.com/in/..."
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground uppercase tracking-wider">GitHub URL</label>
-                  <input
-                    type="url"
-                    value={editForm.github}
-                    onChange={(e) => setEditForm({ ...editForm, github: e.target.value })}
-                    className="w-full h-10 px-3 rounded-xl bg-secondary/60 border border-border text-foreground text-xs font-medium focus:outline-none focus:border-primary"
-                    placeholder="https://github.com/..."
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground uppercase tracking-wider">LinkedIn Profile URL</label>
+                <input
+                  type="url"
+                  value={editForm.linkedin}
+                  onChange={(e) => setEditForm({ ...editForm, linkedin: e.target.value })}
+                  className="w-full h-11 px-3.5 rounded-xl bg-secondary/60 border border-border text-foreground text-sm font-medium focus:outline-none focus:border-primary"
+                  placeholder="https://linkedin.com/in/..."
+                />
               </div>
 
-              {/* Modal Buttons */}
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/60">
                 <button
                   type="button"

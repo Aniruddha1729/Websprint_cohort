@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Bell, Check, UserPlus, ExternalLink, Sparkles, User, CheckCircle2 } from "lucide-react";
 
 export default function HeadsUp() {
@@ -9,7 +10,7 @@ export default function HeadsUp() {
       category: "People",
       time: "1h ago",
       title: "You may know @kanchan23",
-      username: "@kanchan23",
+      username: "kanchan23",
       description: "Kanchan Shendage is active on Cohort. Follow to stay updated.",
       read: false,
     },
@@ -18,7 +19,7 @@ export default function HeadsUp() {
       category: "People",
       time: "1h ago",
       title: "You may know @nitinshinde9834",
-      username: "@nitinshinde9834",
+      username: "nitinshinde9834",
       description: "Shinde Nitin is active on Cohort. Follow to stay updated.",
       read: false,
     },
@@ -44,7 +45,7 @@ export default function HeadsUp() {
       </div>
 
       {/* ========================================== */}
-      {/* 1. HEADSUP HEADER (~105px Height)          */}
+      {/* 1. HEADSUP HEADER                          */}
       {/* ========================================== */}
       <div className="w-full flex items-center justify-between pb-4">
         <div className="space-y-1.5">
@@ -81,7 +82,7 @@ export default function HeadsUp() {
       <div className="w-full border-b border-border/60 mb-8" />
 
       {/* ========================================== */}
-      {/* 2. NOTIFICATION CONTENT CARDS (~1035 x 185)*/}
+      {/* 2. NOTIFICATION CONTENT CARDS             */}
       {/* ========================================== */}
       <div className="w-full flex flex-col items-center space-y-[18px]">
         {notifications.map((n) => (
@@ -91,14 +92,11 @@ export default function HeadsUp() {
               !n.read ? "border-l-4 border-l-primary shadow-md" : "opacity-90"
             }`}
           >
-            {/* Left Icon Container (47 x 47px) */}
             <div className="w-[47px] h-[47px] rounded-xl bg-secondary/80 text-muted-foreground flex items-center justify-center shrink-0 border border-border/50">
               <User className="w-5 h-5" />
             </div>
 
-            {/* Notification Content Area */}
             <div className="flex-1 space-y-2">
-              {/* Metadata Row */}
               <div className="flex items-center gap-3">
                 <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold border border-blue-500/20">
                   {n.category}
@@ -109,25 +107,22 @@ export default function HeadsUp() {
                 )}
               </div>
 
-              {/* Title */}
               <h3 className="font-heading text-lg font-bold text-foreground">
                 {n.title}
               </h3>
 
-              {/* Description */}
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {n.description}
               </p>
 
-              {/* Buttons Row */}
               <div className="pt-2 flex items-center gap-3">
-                <button
-                  onClick={() => alert(`Navigating to ${n.username} profile`)}
+                <Link
+                  to={`/dashboard/profile/${n.username}`}
                   className="h-8 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-teal-500 text-white text-xs font-bold hover:opacity-90 transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>View profile</span>
                   <ExternalLink className="w-3.5 h-3.5" />
-                </button>
+                </Link>
 
                 {!n.read && (
                   <button
@@ -143,9 +138,7 @@ export default function HeadsUp() {
         ))}
       </div>
 
-      {/* ========================================== */}
-      {/* 3. FLOATING CHAT BOT BUTTON                */}
-      {/* ========================================== */}
+      {/* Floating Assistant Button */}
       <button className="fixed bottom-8 right-[23vw] w-14 h-14 rounded-full bg-card border border-border/80 shadow-2xl flex items-center justify-center text-primary hover:scale-110 transition-transform z-40 cursor-pointer">
         <Sparkles className="w-6 h-6 text-primary animate-pulse" />
       </button>
