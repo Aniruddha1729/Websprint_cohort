@@ -1,38 +1,21 @@
-// Firebase Authentication helper module with safe fallback
-export const auth = {
-  currentUser: null,
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-export const googleProvider = {
-  setCustomParameters: () => {},
-};
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-export const onAuthStateChanged = (authObj, callback) => {
-  // Trigger callback with default local user for instant development
-  if (typeof callback === "function") {
-    setTimeout(() => {
-      callback({
-        uid: "local-user-123",
-        displayName: "Shubhang Doley",
-        email: "shubhang.doley@pccoe.edu.in",
-        photoURL: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80",
-      });
-    }, 50);
-  }
-  return () => {};
-};
+// Initialize Firebase Authentication and get a reference to the service
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 
-export const signOut = async () => {
-  return Promise.resolve();
-};
-
-export const signInWithPopup = async () => {
-  return Promise.resolve({
-    user: {
-      uid: "local-user-123",
-      displayName: "Shubhang Doley",
-      email: "shubhang.doley@pccoe.edu.in",
-      photoURL: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80",
-    },
-  });
-};
+// Optional: you can set custom parameters on the provider
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});

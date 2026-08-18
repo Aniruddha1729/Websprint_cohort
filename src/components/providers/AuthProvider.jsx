@@ -1,12 +1,12 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { auth, onAuthStateChanged, signOut } from "../../lib/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../../lib/firebase";
 import LoginModal from "../auth/LoginModal";
 
 const AuthContext = createContext({
   user: null,
   isAuthenticated: false,
   loading: true,
-  loginWithGoogle: () => {},
   logout: () => {},
   openLoginModal: () => {},
 });
@@ -26,66 +26,32 @@ export default function AuthProvider({ children }) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
-    const savedGoogleUser = localStorage.getItem("cohort_google_user");
-    const isLoggedIn = localStorage.getItem("cohort_logged_in");
-
-    if (savedGoogleUser || isLoggedIn === "true") {
-      let googleUserObj = null;
-      if (savedGoogleUser) {
-        try {
-          googleUserObj = JSON.parse(savedGoogleUser);
-        } catch (e) {}
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        const userData = {
+          name: firebaseUser.displayName || "Cohort User",
+          email: firebaseUser.email,
+          avatar: firebaseUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${firebaseUser.uid}`,
+          ...DEFAULT_COHORT_DATA,
+        };
+        setUser(userData);
+        setIsAuthenticated(true);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
       }
+      setLoading(false);
+    });
 
-      const currentAvatar =
-        localStorage.getItem("cohort_user_avatar") ||
-        googleUserObj?.avatar ||
-        "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80";
-
-      setUser({
-        name: googleUserObj?.name || "Shubhang Doley",
-        email: googleUserObj?.email || "shubhang.doley@pccoe.edu.in",
-        avatar: currentAvatar,
-        ...DEFAULT_COHORT_DATA,
-      });
-      setIsAuthenticated(true);
-    } else {
-      setUser(null);
-      setIsAuthenticated(false);
-    }
-    setLoading(false);
+    return () => unsubscribe();
   }, []);
-
-  const loginWithGoogle = (googleUserData) => {
-    const avatarUrl = googleUserData.avatar || `https://lh3.googleusercontent.com/a/default-user`;
-    const fullUser = {
-      name: googleUserData.name || "Cohort Student",
-      email: googleUserData.email || "student@pccoe.edu.in",
-      avatar: avatarUrl,
-      ...DEFAULT_COHORT_DATA,
-    };
-
-    localStorage.setItem("cohort_google_user", JSON.stringify(fullUser));
-    localStorage.setItem("cohort_user_avatar", avatarUrl);
-    localStorage.setItem("cohort_logged_in", "true");
-
-    setUser(fullUser);
-    setIsAuthenticated(true);
-    setIsLoginModalOpen(false);
-  };
 
   const logout = async () => {
     try {
-      if (auth && typeof signOut === "function") {
-        await signOut(auth);
-      }
+      await signOut(auth);
     } catch (error) {
       console.error("Error signing out", error);
     }
-    localStorage.removeItem("cohort_google_user");
-    localStorage.removeItem("cohort_logged_in");
-    setUser(null);
-    setIsAuthenticated(false);
   };
 
   const openLoginModal = () => setIsLoginModalOpen(true);
@@ -97,7 +63,6 @@ export default function AuthProvider({ children }) {
         user,
         isAuthenticated,
         loading,
-        loginWithGoogle,
         logout,
         openLoginModal,
       }}
