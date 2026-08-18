@@ -84,13 +84,12 @@ function AnimatedCounter({ end = 11719, duration = 1800, suffix = "", prefix = "
 }
 
 export default function Landing() {
-  const { bypassLogin } = useAuth();
+  const { openLoginModal } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    bypassLogin("student");
-    navigate("/dashboard");
+    openLoginModal();
   };
 
   const barHeights = [55, 30, 50, 80, 35, 100, 50, 85, 55, 110];

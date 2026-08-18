@@ -5,12 +5,11 @@ import { useAuth } from "../providers/AuthProvider";
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
-  const { bypassLogin } = useAuth();
+  const { openLoginModal } = useAuth();
   const navigate = useNavigate();
 
   const handleGoogleSignIn = () => {
-    bypassLogin("student");
-    navigate("/dashboard");
+    openLoginModal();
   };
 
   return (

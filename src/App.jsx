@@ -17,7 +17,6 @@ import NonAdminRoute from "./components/auth/NonAdminRoute";
 import Landing from "./pages/Landing";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
-import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
 // Dashboard Pages
@@ -47,15 +46,14 @@ export default function App() {
     <GoogleOAuthProvider clientId="87428648402-t48b3kqeogkkdu7ihc9s0orrhhpvf1a8.apps.googleusercontent.com">
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-          <AuthProvider>
-            <Analytics />
-            <BrowserRouter>
+          <BrowserRouter>
+            <AuthProvider>
+              <Analytics />
               <SpidermanOverlay />
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
-                <Route path="/login" element={<AuthRoute><Login /></AuthRoute>} />
                 
                 <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
                   <Route index element={<DashboardHome />} />
@@ -79,8 +77,8 @@ export default function App() {
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
-          </AuthProvider>
+            </AuthProvider>
+          </BrowserRouter>
         </ThemeProvider>
       </QueryClientProvider>
     </GoogleOAuthProvider>

@@ -135,7 +135,7 @@ export default function Profile() {
 
   const handleSignOut = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const statCards = [
