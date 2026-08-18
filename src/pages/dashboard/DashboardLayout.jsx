@@ -67,9 +67,9 @@ export default function DashboardLayout() {
         <div className="px-3 mb-6 flex items-center gap-3.5 w-full">
           <Link
             to="/"
-            className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-500 to-teal-400 flex items-center justify-center text-white font-bold font-secondary text-lg shadow-md shrink-0 hover:scale-105 transition-transform"
+            className="w-10 h-10 rounded-full shadow-md shrink-0 hover:scale-105 transition-transform overflow-hidden flex items-center justify-center bg-card"
           >
-            C
+            <img src="/logo-final.png" alt="Cohort Logo" className="w-full h-full object-cover" />
           </Link>
           <div className="opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
             <span className="font-heading font-bold text-base text-foreground leading-none block">Cohort</span>

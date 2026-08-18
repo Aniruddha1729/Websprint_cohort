@@ -174,9 +174,11 @@ export default function Landing() {
       <header className="w-full h-[90px] px-8 md:px-16 bg-card/90 backdrop-blur-md border-b border-border flex items-center justify-between z-50 sticky top-0 shadow-xs">
         {/* Left Branding */}
         <div className="flex items-center gap-3.5">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-500 to-teal-400 flex items-center justify-center text-white font-bold font-secondary text-base shadow-md">
-            C
-          </div>
+          <img
+            src="/logo-final.png"
+            alt="Cohort Logo"
+            className="w-8.5 h-8.5 rounded-full object-cover shadow-md"
+          />
           <span className="font-heading font-extrabold text-2xl md:text-[30px] text-foreground tracking-tight">
             Cohort
           </span>
@@ -361,15 +363,17 @@ export default function Landing() {
       {/* ========================================== */}
       {/* 4. SECTION 3 — CURVED LOOP TEXT BANNER     */}
       {/* ========================================== */}
-      <section className="w-full border-y border-border bg-secondary text-foreground overflow-hidden relative">
-        <CurvedLoop
-          marqueeText="Be ✦ Creative ✦ With ✦ React ✦ Bits ✦ CONNECT ✦ DISCOVER ✦ NETWORK ✦ COLLABORATE ✦"
-          speed={2}
-          curveAmount={180}
-          direction="right"
-          interactive={true}
-          className="fill-foreground text-foreground"
-        />
+      <section className="w-full border-y border-border bg-secondary text-foreground overflow-hidden relative py-4 px-4 md:px-12 flex items-center justify-center">
+        <div className="w-full max-w-[1600px] mx-auto overflow-hidden relative [mask-image:linear-gradient(to_right,transparent_0%,black_12%,black_88%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_12%,black_88%,transparent_100%)]">
+          <CurvedLoop
+            marqueeText="Be ✦ Creative ✦ With ✦ React ✦ Bits ✦ CONNECT ✦ DISCOVER ✦ NETWORK ✦ COLLABORATE ✦"
+            speed={2}
+            curveAmount={160}
+            direction="right"
+            interactive={true}
+            className="fill-foreground text-foreground"
+          />
+        </div>
       </section>
 
       {/* ========================================== */}
@@ -446,8 +450,24 @@ export default function Landing() {
       {/* ========================================== */}
       <section className="w-full py-20 px-8 md:px-16 bg-secondary/40 border-t border-border">
         <div className="max-w-[880px] mx-auto space-y-8 text-left">
+          <h3 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+            About Cohort PCCOE
+          </h3>
+
           <p className="text-base sm:text-xl text-muted-foreground leading-[1.7] font-normal">
-            Build comprehensive <strong className="text-foreground font-bold">achievement profiles</strong> showcasing certifications, hackathon wins, and project accomplishments to peers and faculty.
+            Cohort is the official student social platform built exclusively for <strong className="text-foreground font-bold">Pimpri Chinchwad College of Engineering (PCCOE), Pune</strong>. Designed and developed by students, for students, it serves as the central hub where over <strong className="text-foreground font-bold">350 active users</strong> connect, collaborate, and stay informed about everything happening on campus.
+          </p>
+
+          <p className="text-base sm:text-xl text-muted-foreground leading-[1.7] font-normal">
+            Unlike generic social media platforms, Cohort is purpose-built for the college ecosystem. It aggregates more than <strong className="text-foreground font-bold">30 student-run communities and clubs</strong> — including technical organizations like OWASP, Google Developer Groups on Campus (GDGC), ACM, and Geeks for Geeks, as well as creative and social clubs like Art Circle, NSS, and ISR. Students can subscribe to communities, receive real-time post notifications, and participate in discussions without switching between multiple WhatsApp groups or Instagram pages.
+          </p>
+
+          <p className="text-base sm:text-xl text-muted-foreground leading-[1.7] font-normal">
+            The platform features end-to-end encrypted messaging through the <strong className="text-foreground font-bold">Connect</strong> module, allowing students to chat privately with friends or in groups. The <strong className="text-foreground font-bold">XD (Exchange)</strong> board offers an anonymous space for campus-wide discussions, enabling students to share honest feedback, creative ideas, and study tips freely.
+          </p>
+
+          <p className="text-base sm:text-xl text-muted-foreground leading-[1.7] font-normal">
+            Cohort also includes an interactive campus map powered by <strong className="text-foreground font-bold">TomTom</strong>, helping new students and visitors navigate PCCOE's sprawling campus. The integrated academic calendar keeps everyone synchronized with exam schedules, holidays, and submission deadlines. Students can build their professional presence through <strong className="text-foreground font-bold">achievement profiles</strong>, showcasing certifications, hackathon wins, and project accomplishments to peers and faculty alike.
           </p>
 
           <p className="text-base sm:text-xl text-muted-foreground leading-[1.7] font-normal">
