@@ -1,0 +1,1 @@
+export default function AdminRoute({ children }) { return (<div>{children}</div>); }

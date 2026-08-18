@@ -1,0 +1,1 @@
+export default function AuthRoute({ children }) { return (<div>{children}</div>); }

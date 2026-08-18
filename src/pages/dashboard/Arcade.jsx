@@ -1,0 +1,1 @@
+export default function Arcade() { return (<div className='p-8'><h1>Arcade</h1><p>// TODO: replace with actual content from screenshot</p></div>); }

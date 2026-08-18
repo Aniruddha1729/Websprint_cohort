@@ -1,0 +1,1 @@
+export default function NonAdminRoute({ children }) { return (<div>{children}</div>); }

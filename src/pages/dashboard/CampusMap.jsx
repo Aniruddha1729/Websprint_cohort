@@ -1,0 +1,1 @@
+export default function CampusMap() { return (<div className='p-8'><h1>CampusMap</h1><p>// TODO: replace with actual content from screenshot</p></div>); }

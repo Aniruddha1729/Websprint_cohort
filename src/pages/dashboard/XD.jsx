@@ -1,0 +1,1 @@
+export default function XD() { return (<div className='p-8'><h1>XD</h1><p>// TODO: replace with actual content from screenshot</p></div>); }

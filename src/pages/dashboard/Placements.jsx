@@ -1,0 +1,1 @@
+export default function Placements() { return (<div className='p-8'><h1>Placements</h1><p>// TODO: replace with actual content from screenshot</p></div>); }
