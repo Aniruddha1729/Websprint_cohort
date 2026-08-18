@@ -3,9 +3,9 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/cohort-logo.png" />
-  <link rel="shortcut icon" href="/cohort-logo.png" />
-  <link rel="apple-touch-icon" href="/cohort-logo.png" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cohort PCCOE</title>
   <meta name="description" content="Cohort PCCOE is the official social platform for PCCOE students to discover communities, connect with peers, collaborate, and stay updated on campus opportunities." />
@@ -37,31 +37,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Urbanist:wght@500;700&display=swap" rel="stylesheet">
 </head>
 
-<body oncontextmenu="return false">
-  <style>
-    body {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      user-select: none;
-    }
-
-    input,
-    textarea,
-    [contenteditable="true"] {
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      user-select: text;
-    }
-  </style>
+<body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
-  <script>
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'F12') e.preventDefault();
-      if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) e.preventDefault();
-      if (e.ctrlKey && e.key === 'u') e.preventDefault();
-    });
-  </script>
 </body>
 
 </html>
