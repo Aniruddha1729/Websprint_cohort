@@ -11,7 +11,7 @@ const INITIAL_POSTS: PostData[] = [
     handle: '@vrushabhhirap',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80',
     date: '· 6 May',
-    likes: 5,
+    likes: 24,
     content: 'TOC solutions are up on Cohort 👀',
     subContent: 'have a look whenever you want... panic studying before the exam is still an option 🙂',
     linkPreview: {
@@ -19,7 +19,7 @@ const INITIAL_POSTS: PostData[] = [
       url: 'https://drive.google.com',
       domain: 'drive.google.com',
     },
-    repliesCount: 1,
+    repliesCount: 4,
     comments: [
       {
         id: 101,
@@ -27,9 +27,18 @@ const INITIAL_POSTS: PostData[] = [
         handle: '@soham24',
         avatarLetter: 'S',
         avatarColor: '#10b981',
-        text: 'Cohort goated ngl',
+        text: 'Cohort goated ngl, saved us for TOC unit 4 proofs!',
         date: '6 May',
       },
+      {
+        id: 102,
+        author: 'Priya Deshmukh',
+        handle: '@priyad25',
+        avatarLetter: 'P',
+        avatarColor: '#ec4899',
+        text: 'Are PDA state machine diagrams included in unit 5 folder?',
+        date: '6 May',
+      }
     ],
   },
   {
@@ -38,7 +47,7 @@ const INITIAL_POSTS: PostData[] = [
     handle: '@anushkashinde',
     avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&auto=format&fit=crop&q=80',
     date: '· 4 May',
-    likes: 15,
+    likes: 38,
     content: 'Friendly announcement for those still "searching for resources" 😉',
     subContent:
       'The DBMS full question bank answer key + unit-wise PYQ solutions are now live on Cohort. No more sifting through 10 Telegram groups — it\'s all right here.',
@@ -47,7 +56,7 @@ const INITIAL_POSTS: PostData[] = [
       url: 'https://drive.google.com',
       domain: 'drive.google.com',
     },
-    repliesCount: 3,
+    repliesCount: 5,
     comments: [
       {
         id: 201,
@@ -60,6 +69,111 @@ const INITIAL_POSTS: PostData[] = [
       },
     ],
   },
+  {
+    id: 3,
+    author: 'Shivam Deshmukh',
+    handle: '@shivam_comp25',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80',
+    date: '· 2 May',
+    likes: 42,
+    content: '🚀 PCCOE WebSprint Cohort 2026 Hackathon Registrations are OPEN!',
+    subContent:
+      '48-Hour fullstack marathon building high-performance web apps with React, Vite & Three.js shaders. ₹50,000 prize pool up for grabs for PCCOE teams!',
+    linkPreview: {
+      title: 'websprint.pccoepune.org › register-team-2026',
+      url: 'https://pccoepune.org',
+      domain: 'websprint.pccoepune.org',
+    },
+    repliesCount: 8,
+    comments: [
+      {
+        id: 301,
+        author: 'Rohan Patil',
+        handle: '@rohan_entc',
+        avatarLetter: 'R',
+        avatarColor: '#6366f1',
+        text: 'Can ENTC & Mechanical students form cross-branch teams?',
+        date: '2 May',
+      },
+    ],
+  },
+  {
+    id: 4,
+    author: 'Riya Agarwal',
+    handle: '@riya_ieee',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&auto=format&fit=crop&q=80',
+    date: '· 28 Apr',
+    likes: 29,
+    content: 'IEEE PCCOE Machine Learning & PyTorch Workshop this Saturday 🤖',
+    subContent:
+      'Join us at Computer Dept Innovation Lab (Building C). We will train CNN vision models and deploy PyTorch inference servers live.',
+    repliesCount: 3,
+    comments: [
+      {
+        id: 401,
+        author: 'Saurabh Joshi',
+        handle: '@saurabh_it',
+        avatarLetter: 'S',
+        avatarColor: '#f59e0b',
+        text: 'Will certificates be provided by IEEE Pune Section?',
+        date: '28 Apr',
+      },
+    ],
+  },
+  {
+    id: 5,
+    author: 'Omkar Patil',
+    handle: '@omkar_robotics',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&auto=format&fit=crop&q=80',
+    date: '· 25 Apr',
+    likes: 19,
+    content: 'Robotics Workshop in Mechanical Sandbox Tomorrow at 4 PM ⚙️',
+    subContent:
+      'Hands-on session with ROS2 navigation stack and ESP32 microcontrollers. Free entry for all PCCOE departments!',
+    repliesCount: 2,
+    comments: [],
+  },
+  {
+    id: 6,
+    author: 'Neha Joshi',
+    handle: '@neha_council',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&auto=format&fit=crop&q=80',
+    date: '· 20 Apr',
+    likes: 56,
+    content: 'Campus Reading Room 24x7 Access Proposal Submitted 📚',
+    subContent:
+      'Student Council officially submitted the petition to PCCOE management for 24x7 Reading Room access during semester end-sem exams.',
+    repliesCount: 11,
+    comments: [
+      {
+        id: 601,
+        author: 'Kunal Verma',
+        handle: '@kunal_cs',
+        avatarLetter: 'K',
+        avatarColor: '#8b5cf6',
+        text: 'Huge win if approved before the mid-May exams!',
+        date: '20 Apr',
+      },
+    ],
+  },
+  {
+    id: 7,
+    author: 'Tanmay Kulkarni',
+    handle: '@tanmay_placements',
+    avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=80&auto=format&fit=crop&q=80',
+    date: '· 15 Apr',
+    likes: 67,
+    content: 'PCCOE Campus Placement Statistics 2025-26 Updated 📊',
+    subContent:
+      'Over 450+ offers generated across Computer, IT, ENTC and Mechanical branches so far! Check Cohort placement portal for breakdown.',
+    linkPreview: {
+      title: 'pccoe.org › placements › stats-summary-2026',
+      url: 'https://pccoepune.org',
+      domain: 'pccoepune.org',
+    },
+    repliesCount: 6,
+    comments: [],
+  }
 ];
 
 export const MainFeed: React.FC = () => {
@@ -83,15 +197,9 @@ export const MainFeed: React.FC = () => {
   };
 
   return (
-    /**
-     * flex-1 → takes all remaining horizontal space between the two sidebars.
-     * h-screen + overflow-y-auto → this column scrolls independently.
-     * min-w-0 prevents flex child from overflowing its container.
-     * bg-[#050505] is the content background.
-     */
-    <main className="flex-1 min-w-0 h-screen overflow-y-auto bg-[#050505] relative">
+    <main className="w-[60%] flex-shrink-0 min-w-0 h-screen overflow-y-auto bg-[#050505] relative">
 
-      {/* Subtle repeating icon-grid pattern (absolutely covers this column only) */}
+      {/* Subtle repeating icon-grid pattern */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none z-0 opacity-[0.028]"
@@ -101,8 +209,8 @@ export const MainFeed: React.FC = () => {
         }}
       />
 
-      {/* Scrollable content – centered feed, max 600px wide */}
-      <div className="relative z-10 mx-auto w-full max-w-[600px] px-4 py-6 space-y-5">
+      {/* Scrollable content – centered feed occupying 60% section */}
+      <div className="relative z-10 mx-auto w-full max-w-[680px] px-6 py-6 space-y-5">
 
         {/* Feed header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/[0.07]">
@@ -129,7 +237,7 @@ export const MainFeed: React.FC = () => {
         </div>
 
         {/* Bottom breathing room */}
-        <div className="h-20" />
+        <div className="h-24" />
       </div>
     </main>
   );

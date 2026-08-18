@@ -6,16 +6,47 @@ const COMMUNITIES = [
   { emoji: '🏛️', name: 'Higher Studies Club for UPSC / MPSC' },
   { emoji: '⚡', name: 'Google Developer Groups PCCoE' },
   { emoji: '🎓', name: 'Higher Studies Club for CAT / GMAT' },
+  { emoji: '💻', name: 'WebSprint Cohort 2026 Developers' },
+  { emoji: '🤖', name: 'Robocon PCCOE Sandbox Team' },
+  { emoji: '🔬', name: 'IEEE PCCOE Student Chapter' },
+  { emoji: '🚀', name: 'E-Cell PCCOE Startup Hub' },
+  { emoji: '🎨', name: 'Design & XD UI/UX Guild' },
+  { emoji: '🎵', name: 'Art Circle & Cultural Forum' }
 ];
+
 const FRIENDS = [
   { name: 'C157_Shravan Kolhe', handle: '@shravan24', color: '#6366f1' },
   { name: 'FELINA MATHEW',      handle: '@felina22',  color: '#ec4899' },
   { name: 'Arnav Telangi',      handle: '@arnav24',   color: '#10b981' },
+  { name: 'Soham Zagare',       handle: '@soham24',   color: '#f59e0b' },
+  { name: 'Priya Deshmukh',     handle: '@priyad25',  color: '#8b5cf6' },
+  { name: 'Rohan Patil',        handle: '@rohan_entc',color: '#3b82f6' },
+  { name: 'Aarav Sharma',       handle: '@aarav26',   color: '#ef4444' },
+  { name: 'Tanmay Kulkarni',    handle: '@tanmay25',  color: '#14b8a6' }
 ];
+
 const CONNECT = [
   { name: 'C157_Shravan Kolhe', handle: '@shravan24' },
   { name: 'FELINA MATHEW',      handle: '@felina22'  },
   { name: 'Arnav Telangi',      handle: '@arnav24'   },
+  { name: 'Shivam Deshmukh',    handle: '@shivam_comp' },
+  { name: 'Neha Joshi',         handle: '@neha_council' },
+  { name: 'Omkar Patil',        handle: '@omkar_robot' },
+  { name: 'Saurabh Joshi',      handle: '@saurabh_it' }
+];
+
+const CALENDAR_EVENTS = [
+  { title: 'WebSprint Cohort Hackathon', date: 'May 10 • 10:00 AM', tag: 'Hackathon' },
+  { title: 'TOC Unit 4 & 5 Doubt Session', date: 'May 12 • 4:00 PM', tag: 'Exam Study' },
+  { title: 'IEEE PyTorch ML Workshop', date: 'May 14 • 2:00 PM', tag: 'Workshop' },
+  { title: 'Anantya Tech Fest Registration', date: 'May 18 • All Day', tag: 'Fest' },
+  { title: 'Mid-Sem Exam Timetable Release', date: 'May 22 • Official', tag: 'Notice' }
+];
+
+const HEADSUP = [
+  { text: 'Full access will soon require a PCCOE account login.', type: 'important' },
+  { text: 'Central Library extended reading room hours: 8 AM to 11 PM during exam week.', type: 'info' },
+  { text: 'WiFi maintenance in Building C tomorrow between 2 PM - 3 PM.', type: 'warning' }
 ];
 
 /* ── Section heading ────────────────────────────────────────── */
@@ -30,17 +61,12 @@ const SectionHead: React.FC<{ label: string; right?: React.ReactNode }> = ({ lab
 
 /* ── RightSidebar ───────────────────────────────────────────── */
 export const RightSidebar: React.FC = () => (
-  /**
-   * flex-shrink-0 + w-[280px] + h-screen + overflow-y-auto
-   * This column is a flex child just like the sidebar and main feed.
-   * It stays at a fixed width and scrolls its own content independently.
-   */
   <aside
     className="
-      flex-shrink-0 w-[280px] h-screen
+      w-[20%] min-w-[180px] flex-shrink-0 h-screen
       bg-[#07070A] border-l border-white/[0.06]
       overflow-y-auto overflow-x-hidden
-      px-4 pt-4 pb-6
+      px-4 pt-4 pb-12
       space-y-0
     "
   >
@@ -142,7 +168,19 @@ export const RightSidebar: React.FC = () => (
     {/* ── C/CALENDAR ────────────────────────────── */}
     <section className="mb-5 pt-4 border-t border-white/[0.05]">
       <SectionHead label="C/CALENDAR" />
-      <p className="text-[12px] text-gray-600 italic pl-1">No upcoming events</p>
+      <div className="space-y-2">
+        {CALENDAR_EVENTS.map((event, i) => (
+          <div key={i} className="bg-[#09090E] border border-white/[0.05] p-2.5 rounded-xl space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-white truncate">{event.title}</span>
+              <span className="text-[9px] font-mono text-[#35C1B5] bg-[#35C1B5]/10 px-1.5 py-0.2 rounded">
+                {event.tag}
+              </span>
+            </div>
+            <p className="text-[10px] text-gray-500 font-mono">{event.date}</p>
+          </div>
+        ))}
+      </div>
     </section>
 
     {/* ── C/HEADSUP ─────────────────────────────── */}
@@ -151,15 +189,27 @@ export const RightSidebar: React.FC = () => (
         label="C/HEADSUP"
         right={
           <span className="text-[9px] font-bold text-amber-400 bg-amber-500/10 px-2 py-px rounded-full border border-amber-500/20">
-            Important
+            3 Updates
           </span>
         }
       />
-      <div className="bg-amber-500/[0.05] border border-amber-500/20 p-3 rounded-xl">
-        <p className="text-[12px] text-amber-200/90 leading-relaxed">
-          Full access will soon require a PCCOE account login.
-        </p>
+      <div className="space-y-2">
+        {HEADSUP.map((item, i) => (
+          <div
+            key={i}
+            className={`p-2.5 rounded-xl text-[11px] leading-relaxed border ${
+              item.type === 'important'
+                ? 'bg-amber-500/[0.05] border-amber-500/20 text-amber-200/90'
+                : item.type === 'warning'
+                ? 'bg-red-500/[0.05] border-red-500/20 text-red-200/90'
+                : 'bg-blue-500/[0.05] border-blue-500/20 text-blue-200/90'
+            }`}
+          >
+            {item.text}
+          </div>
+        ))}
       </div>
     </section>
+
   </aside>
 );

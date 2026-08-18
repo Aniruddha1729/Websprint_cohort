@@ -69,14 +69,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <section className="relative w-full min-h-screen flex items-center overflow-hidden pt-16">
 
         {/* LiquidEther full-screen background */}
-        <div className="absolute inset-0 z-0 opacity-65 pointer-events-auto">
+        <div className="absolute inset-0 z-0 opacity-50 pointer-events-auto">
           <LiquidEther
             colors={['#5227FF', '#FF9FFC', '#B497CF']}
-            mouseForce={22} cursorSize={110}
-            isViscous viscous={39} iterationsViscous={36} iterationsPoisson={11}
+            mouseForce={5} cursorSize={60}
+            isViscous viscous={45} iterationsViscous={36} iterationsPoisson={11}
             resolution={0.5} isBounce={false}
-            autoDemo autoSpeed={0.35} autoIntensity={0.6}
-            takeoverDuration={0.25} autoResumeDelay={1000} autoRampDuration={0.6}
+            autoDemo autoSpeed={0.12} autoIntensity={0.25}
+            takeoverDuration={0.5} autoResumeDelay={2000} autoRampDuration={1.2}
             color0="#5227FF" color1="#FF9FFC" color2="#B497CF"
             style={{ width: '100%', height: '100%' }}
           />
@@ -146,24 +146,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
           </div>
 
-          {/* RIGHT — macOS Dashboard card */}
+          {/* RIGHT — macOS Dashboard card (Squarish 1:1 Box shifted slightly right) */}
           <div
             onClick={onBypassLogin}
             className="
-              cursor-pointer w-full bg-[#0A0A0E]/90 border border-white/[0.10]
-              rounded-3xl overflow-hidden
+              cursor-pointer w-full max-w-[540px] aspect-square bg-[#0A0A0E]/95 border border-white/[0.12]
+              rounded-2xl overflow-hidden
               shadow-[0_0_80px_rgba(0,0,0,0.6)]
               backdrop-blur-2xl
-              hover:border-[#8067FF]/40 hover:shadow-[0_0_100px_rgba(0,0,0,0.7)]
-              transition-all duration-300
+              hover:border-[#8067FF]/50 hover:shadow-[0_0_100px_rgba(128,103,255,0.2)]
+              transition-all duration-300 mx-auto lg:ml-auto lg:mr-0 lg:translate-x-6 flex flex-col justify-between
             "
           >
             {/* Rainbow top bar */}
             <div className="h-1 bg-gradient-to-r from-[#5227FF] via-[#FF9FFC] to-[#B497CF]" />
 
-            <div className="p-7 md:p-9 space-y-6">
+            <div className="p-6 md:p-8 flex-1 flex flex-col justify-between space-y-4">
               {/* Window chrome */}
-              <div className="flex items-center gap-1.5 border-b border-white/[0.07] pb-4">
+              <div className="flex items-center gap-1.5 border-b border-white/[0.07] pb-3.5">
                 <span className="w-3 h-3 rounded-full bg-[#FF5F56]" />
                 <span className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
                 <span className="w-3 h-3 rounded-full bg-[#27C93F]" />
@@ -171,31 +171,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
 
               {/* Metric */}
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold tracking-[0.14em] text-gray-500 uppercase">Total Project Views</span>
-                <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                  <TrendingUp className="w-3 h-3" /> +4.2%
-                </span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold tracking-[0.14em] text-gray-500 uppercase">Total Project Views</span>
+                  <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                    <TrendingUp className="w-3 h-3" /> +4.2%
+                  </span>
+                </div>
+
+                <div className="flex items-baseline gap-3">
+                  <Eye className="w-8 h-8 text-[#A78BFA]" />
+                  <span className="text-5xl md:text-6xl font-extrabold tracking-tight text-white font-mono">
+                    {views.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                    <span className="relative rounded-full h-2 w-2 bg-emerald-500" />
+                  </span>
+                  Updating in realtime · Click to open Dashboard
+                </div>
               </div>
 
-              <div className="flex items-baseline gap-3">
-                <Eye className="w-8 h-8 text-[#A78BFA]" />
-                <span className="text-5xl md:text-6xl font-extrabold tracking-tight text-white font-mono">
-                  {views.toLocaleString()}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2 text-[11px] text-gray-500">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative rounded-full h-2 w-2 bg-emerald-500" />
-                </span>
-                Updating in realtime · Click to open Dashboard
-              </div>
-
-              {/* Bar chart */}
-              <div className="bg-[#050508]/80 border border-white/[0.06] rounded-2xl p-4">
-                <div className="flex items-end justify-between h-36 gap-1.5">
+              {/* Bar chart (Flex-1 in squarish container) */}
+              <div className="bg-[#050508]/85 border border-white/[0.06] rounded-xl p-4 flex-1 flex flex-col justify-between min-h-[160px]">
+                <div className="flex items-end justify-between flex-1 gap-1.5 min-h-[110px]">
                   {BAR_HEIGHTS.map((h, i) => (
                     <div
                       key={i}
@@ -210,7 +212,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       )}
                       <div
                         style={{ height: `${h}%` }}
-                        className={`w-full rounded-t-md transition-all duration-200 ${
+                        className={`w-full rounded-t-sm transition-all duration-200 ${
                           hoveredBar === i
                             ? 'bg-gradient-to-t from-[#8067FF] to-[#FF9FFC] shadow-[0_0_12px_rgba(255,159,252,0.5)]'
                             : 'bg-gradient-to-t from-[#1d1936] to-[#5d47b5] group-hover/bar:from-[#5227FF] group-hover/bar:to-[#A78BFA]'
@@ -219,7 +221,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     </div>
                   ))}
                 </div>
-                <div className="flex justify-between text-[10px] text-gray-600 mt-2 font-mono">
+                <div className="flex justify-between text-[10px] text-gray-600 mt-2 font-mono pt-1">
                   {['00:00','04:00','08:00','12:00','16:00','20:00','24:00'].map(t => <span key={t}>{t}</span>)}
                 </div>
               </div>
