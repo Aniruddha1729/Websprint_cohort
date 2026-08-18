@@ -6,6 +6,7 @@ const AuthContext = createContext({
   user: null,
   isAuthenticated: false,
   loading: true,
+  loginWithGoogle: () => {},
   logout: () => {},
   openLoginModal: () => {},
 });
@@ -26,71 +27,52 @@ export default function AuthProvider({ children }) {
 
   useEffect(() => {
     const savedGoogleUser = localStorage.getItem("cohort_google_user");
-    let googleUserObj = null;
-    if (savedGoogleUser) {
-      try {
-        googleUserObj = JSON.parse(savedGoogleUser);
-      } catch (e) {}
-    }
+    const isLoggedIn = localStorage.getItem("cohort_logged_in");
 
-    const currentAvatar =
-      localStorage.getItem("cohort_user_avatar") ||
-      googleUserObj?.avatar ||
-      "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80";
+    if (savedGoogleUser || isLoggedIn === "true") {
+      let googleUserObj = null;
+      if (savedGoogleUser) {
+        try {
+          googleUserObj = JSON.parse(savedGoogleUser);
+        } catch (e) {}
+      }
 
-    const currentName = googleUserObj?.name || "Shubhang Doley";
-    const currentEmail = googleUserObj?.email || "shubhang.doley@pccoe.edu.in";
+      const currentAvatar =
+        localStorage.getItem("cohort_user_avatar") ||
+        googleUserObj?.avatar ||
+        "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80";
 
-    if (!auth || typeof onAuthStateChanged !== "function") {
       setUser({
-        name: currentName,
-        email: currentEmail,
+        name: googleUserObj?.name || "Shubhang Doley",
+        email: googleUserObj?.email || "shubhang.doley@pccoe.edu.in",
         avatar: currentAvatar,
         ...DEFAULT_COHORT_DATA,
       });
       setIsAuthenticated(true);
-      setLoading(false);
-      return;
+    } else {
+      setUser(null);
+      setIsAuthenticated(false);
     }
-
-    try {
-      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-        if (firebaseUser) {
-          const userAvatar = firebaseUser.photoURL || currentAvatar;
-          const userData = {
-            name: firebaseUser.displayName || currentName,
-            email: firebaseUser.email || currentEmail,
-            avatar: userAvatar,
-            ...DEFAULT_COHORT_DATA,
-          };
-          localStorage.setItem("cohort_user_avatar", userAvatar);
-          setUser(userData);
-          setIsAuthenticated(true);
-        } else {
-          setUser({
-            name: currentName,
-            email: currentEmail,
-            avatar: currentAvatar,
-            ...DEFAULT_COHORT_DATA,
-          });
-          setIsAuthenticated(true);
-        }
-        setLoading(false);
-      });
-
-      return () => unsubscribe();
-    } catch (err) {
-      console.warn("Auth state observer fallback:", err);
-      setUser({
-        name: currentName,
-        email: currentEmail,
-        avatar: currentAvatar,
-        ...DEFAULT_COHORT_DATA,
-      });
-      setIsAuthenticated(true);
-      setLoading(false);
-    }
+    setLoading(false);
   }, []);
+
+  const loginWithGoogle = (googleUserData) => {
+    const avatarUrl = googleUserData.avatar || `https://lh3.googleusercontent.com/a/default-user`;
+    const fullUser = {
+      name: googleUserData.name || "Cohort Student",
+      email: googleUserData.email || "student@pccoe.edu.in",
+      avatar: avatarUrl,
+      ...DEFAULT_COHORT_DATA,
+    };
+
+    localStorage.setItem("cohort_google_user", JSON.stringify(fullUser));
+    localStorage.setItem("cohort_user_avatar", avatarUrl);
+    localStorage.setItem("cohort_logged_in", "true");
+
+    setUser(fullUser);
+    setIsAuthenticated(true);
+    setIsLoginModalOpen(false);
+  };
 
   const logout = async () => {
     try {
@@ -100,6 +82,8 @@ export default function AuthProvider({ children }) {
     } catch (error) {
       console.error("Error signing out", error);
     }
+    localStorage.removeItem("cohort_google_user");
+    localStorage.removeItem("cohort_logged_in");
     setUser(null);
     setIsAuthenticated(false);
   };
@@ -109,7 +93,14 @@ export default function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated, loading, logout, openLoginModal }}
+      value={{
+        user,
+        isAuthenticated,
+        loading,
+        loginWithGoogle,
+        logout,
+        openLoginModal,
+      }}
     >
       {!loading && children}
       <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />

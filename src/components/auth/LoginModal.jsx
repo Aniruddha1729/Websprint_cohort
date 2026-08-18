@@ -1,37 +1,59 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import { auth, googleProvider, signInWithPopup } from "../../lib/firebase";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../providers/AuthProvider";
 
 export default function LoginModal({ isOpen, onClose }) {
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { loginWithGoogle } = useAuth();
+
+  const performGoogleOAuth = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        // Fetch real Google account profile info from Google OAuth2 API
+        const res = await fetch(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${tokenResponse.access_token}`,
+            },
+          }
+        );
+        const googleUser = await res.json();
+
+        loginWithGoogle({
+          name: googleUser.name || "Cohort Student",
+          email: googleUser.email || "student@pccoe.edu.in",
+          avatar:
+            googleUser.picture ||
+            "https://lh3.googleusercontent.com/a/default-user",
+        });
+
+        onClose();
+        navigate("/dashboard");
+      } catch (err) {
+        console.error("Failed to retrieve Google profile:", err);
+        setError("Failed to retrieve Google profile. Please try again.");
+      }
+    },
+    onError: (errorResponse) => {
+      console.error("Google OAuth Sign-In Error:", errorResponse);
+      setError("Google Sign-In was cancelled or failed. Please try again.");
+    },
+  });
 
   if (!isOpen) return null;
 
-  const handleGoogleSignIn = async () => {
-    if (!agreed) return;
-    try {
-      const res = await signInWithPopup(auth, googleProvider);
-      if (res && res.user) {
-        const googlePhoto =
-          res.user.photoURL ||
-          `https://lh3.googleusercontent.com/a/default-user`;
-        const googleUserData = {
-          name: res.user.displayName || "Cohort Student",
-          email: res.user.email || "student@pccoe.edu.in",
-          avatar: googlePhoto,
-        };
-        localStorage.setItem("cohort_google_user", JSON.stringify(googleUserData));
-        localStorage.setItem("cohort_user_avatar", googlePhoto);
-      }
-      onClose();
-      window.location.href = "/dashboard";
-    } catch (err) {
-      console.error("Google sign in error", err);
-      setError("Failed to sign in. Please try again.");
+  const handleGoogleSignIn = () => {
+    if (!agreed) {
+      setError("Please agree to the Terms and Conditions first.");
+      return;
     }
+    setError("");
+    performGoogleOAuth();
   };
 
   return (
@@ -70,7 +92,11 @@ export default function LoginModal({ isOpen, onClose }) {
               </p>
             </div>
 
-            {error && <p className="text-red-500 text-sm font-semibold bg-red-50 p-2 rounded w-full">{error}</p>}
+            {error && (
+              <p className="text-red-500 text-xs font-semibold bg-red-50 border border-red-200 p-2.5 rounded-xl w-full">
+                {error}
+              </p>
+            )}
 
             <div className="w-full pt-8 space-y-7">
               <label className="flex items-start gap-3.5 cursor-pointer group px-1">
@@ -95,7 +121,7 @@ export default function LoginModal({ isOpen, onClose }) {
                 disabled={!agreed}
                 className={`w-full h-[56px] flex items-center justify-center gap-3.5 rounded-full font-bold text-[16px] transition-all duration-300 ${
                   agreed 
-                    ? "bg-[#9CA3AF] text-white hover:bg-[#6B7280] shadow-md hover:shadow-lg cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0" 
+                    ? "bg-[#111827] text-white hover:bg-black shadow-md hover:shadow-lg cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0" 
                     : "bg-[#D1D5DB] text-white cursor-not-allowed opacity-80"
                 }`}
               >
