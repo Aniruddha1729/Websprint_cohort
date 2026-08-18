@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import { useGoogleLogin } from "@react-oauth/google";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../../lib/firebase";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthProvider";
 
@@ -8,52 +9,24 @@ export default function LoginModal({ isOpen, onClose }) {
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { loginWithGoogle } = useAuth();
-
-  const performGoogleOAuth = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        // Fetch real Google account profile info from Google OAuth2 API
-        const res = await fetch(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: {
-              Authorization: `Bearer ${tokenResponse.access_token}`,
-            },
-          }
-        );
-        const googleUser = await res.json();
-
-        loginWithGoogle({
-          name: googleUser.name || "Cohort Student",
-          email: googleUser.email || "student@pccoe.edu.in",
-          avatar:
-            googleUser.picture ||
-            "https://lh3.googleusercontent.com/a/default-user",
-        });
-
-        onClose();
-        navigate("/dashboard");
-      } catch (err) {
-        console.error("Failed to retrieve Google profile:", err);
-        setError("Failed to retrieve Google profile. Please try again.");
-      }
-    },
-    onError: (errorResponse) => {
-      console.error("Google OAuth Sign-In Error:", errorResponse);
-      setError("Google Sign-In was cancelled or failed. Please try again.");
-    },
-  });
 
   if (!isOpen) return null;
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     if (!agreed) {
       setError("Please agree to the Terms and Conditions first.");
       return;
     }
     setError("");
-    performGoogleOAuth();
+    
+    try {
+      await signInWithPopup(auth, googleProvider);
+      onClose();
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Firebase Google sign in error", err);
+      setError("Failed to sign in. Please try again.");
+    }
   };
 
   return (
