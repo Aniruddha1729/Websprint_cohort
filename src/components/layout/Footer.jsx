@@ -9,9 +9,7 @@ export default function Footer() {
           
           <div className="flex flex-col gap-4">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold font-secondary">C</span>
-              </div>
+              <img src="/logo-final.png" alt="Cohort Logo" className="w-8 h-8 rounded-full object-cover shadow-md" />
               <span className="font-heading font-bold text-xl tracking-tight text-foreground">
                 Cohort PCCOE
               </span>

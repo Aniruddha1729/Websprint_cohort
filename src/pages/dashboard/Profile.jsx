@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Pencil,
   MessageSquare,
@@ -12,6 +12,12 @@ import {
   CheckCircle2,
   Sparkles,
   Share2,
+  RefreshCw,
+  X,
+  Check,
+  Building,
+  GraduationCap,
+  Globe,
 } from "lucide-react";
 import { useAuth } from "../../components/providers/AuthProvider";
 import { useNavigate } from "react-router-dom";
@@ -24,10 +30,108 @@ function LinkedinIcon(props) {
   );
 }
 
+function GithubIcon(props) {
+  return (
+    <svg className="w-4.5 h-4.5 fill-current" viewBox="0 0 24 24" {...props}>
+      <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2Z"/>
+    </svg>
+  );
+}
+
 export default function Profile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("posts");
+
+  const avatarInputRef = useRef(null);
+  const bannerInputRef = useRef(null);
+
+  const defaultAvatar = "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80";
+
+  const [avatar, setAvatar] = useState(() => {
+    return localStorage.getItem("cohort_user_avatar") || defaultAvatar;
+  });
+
+  const [banner, setBanner] = useState(() => {
+    return localStorage.getItem("cohort_user_banner") || null;
+  });
+
+  // Profile Form Data state from localStorage
+  const [profileData, setProfileData] = useState(() => {
+    const saved = localStorage.getItem("cohort_user_profile_data");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return {
+      name: user?.name || "046_Shuhbang_Doley",
+      username: "shubhang24",
+      bio: "Computer Engineering Student @ PCCOE | Web Developer & Tech Enthusiast 🚀",
+      department: "Computer Engineering (TE)",
+      linkedin: "https://linkedin.com",
+      github: "https://github.com",
+    };
+  });
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState(profileData);
+
+  const handleAvatarUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image size should be less than 5MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setAvatar(base64String);
+        localStorage.setItem("cohort_user_avatar", base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBannerUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Banner image size should be less than 5MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setBanner(base64String);
+        localStorage.setItem("cohort_user_banner", base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const resetAvatar = () => {
+    setAvatar(defaultAvatar);
+    localStorage.removeItem("cohort_user_avatar");
+  };
+
+  const resetBanner = () => {
+    setBanner(null);
+    localStorage.removeItem("cohort_user_banner");
+  };
+
+  const handleOpenEditModal = () => {
+    setEditForm(profileData);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveProfile = (e) => {
+    e.preventDefault();
+    setProfileData(editForm);
+    localStorage.setItem("cohort_user_profile_data", JSON.stringify(editForm));
+    setIsEditModalOpen(false);
+  };
 
   const handleSignOut = () => {
     logout();
@@ -67,6 +171,22 @@ export default function Profile() {
 
   return (
     <div className="w-full min-h-full pb-16 flex flex-col relative select-none bg-background">
+      {/* Hidden File Inputs */}
+      <input
+        type="file"
+        ref={avatarInputRef}
+        onChange={handleAvatarUpload}
+        accept="image/*"
+        className="hidden"
+      />
+      <input
+        type="file"
+        ref={bannerInputRef}
+        onChange={handleBannerUpload}
+        accept="image/*"
+        className="hidden"
+      />
+
       {/* Decorative Accents */}
       <div className="absolute top-4 left-6 opacity-20 pointer-events-none text-xs font-mono z-30">
         ✦ ✨ ✦
@@ -75,17 +195,42 @@ export default function Profile() {
       {/* ========================================== */}
       {/* 1. PROFILE COVER / HERO BANNER (~260px)     */}
       {/* ========================================== */}
-      <div className="w-full h-[260px] relative overflow-hidden bg-gradient-to-r from-pink-500/30 via-purple-700 to-blue-900">
-        {/* Abstract Grainy Aurora Gradient Background */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-pink-500/50 via-purple-600/40 to-transparent" />
-        <div className="absolute -bottom-10 -left-10 w-96 h-96 bg-pink-500/30 rounded-full blur-3xl" />
-        <div className="absolute -top-10 -right-10 w-96 h-96 bg-blue-500/40 rounded-full blur-3xl" />
+      <div className="w-full h-[260px] relative overflow-hidden bg-gradient-to-r from-pink-500/30 via-purple-700 to-blue-900 group">
+        {banner ? (
+          <img src={banner} alt="Custom Cover Banner" className="w-full h-full object-cover" />
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-pink-500/50 via-purple-600/40 to-transparent" />
+            <div className="absolute -bottom-10 -left-10 w-96 h-96 bg-pink-500/30 rounded-full blur-3xl" />
+            <div className="absolute -top-10 -right-10 w-96 h-96 bg-blue-500/40 rounded-full blur-3xl" />
+          </>
+        )}
+
+        {/* Change Banner Button */}
+        <div className="absolute top-6 left-8 flex items-center gap-2">
+          <button
+            onClick={() => bannerInputRef.current?.click()}
+            className="px-3.5 py-1.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md text-white text-xs font-bold flex items-center gap-1.5 shadow-md border border-white/20 transition-all cursor-pointer"
+            title="Change Cover Banner"
+          >
+            <Camera className="w-3.5 h-3.5" />
+            <span>Change Cover</span>
+          </button>
+
+          {banner && (
+            <button
+              onClick={resetBanner}
+              className="px-3 py-1.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md text-white text-xs font-semibold border border-white/20 transition-all cursor-pointer"
+              title="Reset Banner"
+            >
+              Reset
+            </button>
+          )}
+        </div>
 
         {/* Top-Right COHORT USER Pill Badge */}
         <div className="absolute top-6 right-8 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center gap-2.5 shadow-md">
-          <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white font-bold font-secondary text-xs">
-            C
-          </div>
+          <img src="/logo-final.png" alt="Cohort Logo" className="w-6 h-6 rounded-full object-cover shadow-xs" />
           <span className="text-xs font-bold tracking-wider text-white">COHORT USER</span>
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
         </div>
@@ -97,21 +242,21 @@ export default function Profile() {
       <div className="px-[2.5%] relative flex flex-col md:flex-row items-start md:items-end justify-between gap-6 -mt-16 mb-8">
         {/* Avatar & Username */}
         <div className="flex items-end gap-6">
-          {/* Japanese Torii Gate Illustrated Avatar (~150 x 145px) */}
+          {/* Avatar Container (~150 x 145px) */}
           <div className="relative group shrink-0">
-            <div className="w-[150px] h-[145px] rounded-2xl bg-card border-4 border-card shadow-xl overflow-hidden">
+            <div className="w-[150px] h-[145px] rounded-2xl bg-card border-4 border-card shadow-xl overflow-hidden relative">
               <img
-                src="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80"
-                alt="Torii Gate Profile"
+                src={avatar}
+                alt="Profile Avatar"
                 className="w-full h-full object-cover"
               />
             </div>
 
-            {/* Bottom-Right Blue Camera Button (~42-45px) */}
+            {/* Bottom-Right Camera Upload Button */}
             <button
-              onClick={() => alert("Change profile avatar")}
+              onClick={() => avatarInputRef.current?.click()}
               className="absolute -bottom-1.5 -right-1.5 w-11 h-11 rounded-full bg-primary border-2 border-card text-white flex items-center justify-center shadow-md hover:scale-110 transition-transform cursor-pointer"
-              title="Upload Avatar"
+              title="Upload Profile Picture"
             >
               <Camera className="w-5 h-5" />
             </button>
@@ -119,52 +264,81 @@ export default function Profile() {
 
           {/* Username & Tag */}
           <div className="space-y-1 pb-2">
-            <h1 className="font-heading text-3xl md:text-[38px] font-bold text-foreground tracking-tight leading-none">
-              {user?.name || "046_Shuhbang_Doley"}
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="font-heading text-3xl md:text-[38px] font-bold text-foreground tracking-tight leading-none">
+                {profileData.name}
+              </h1>
+
+              {avatar !== defaultAvatar && (
+                <button
+                  onClick={resetAvatar}
+                  className="px-2.5 py-1 rounded-lg bg-secondary text-muted-foreground hover:text-foreground text-[11px] font-medium border border-border flex items-center gap-1 cursor-pointer"
+                  title="Reset to default avatar"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  <span>Reset Avatar</span>
+                </button>
+              )}
+            </div>
+
             <p className="text-base text-muted-foreground font-medium">
-              @shubhang24
+              @{profileData.username}
             </p>
+
+            <div className="flex items-center gap-2 pt-1 text-xs text-muted-foreground font-normal">
+              <GraduationCap className="w-3.5 h-3.5 text-primary" />
+              <span>{profileData.department}</span>
+            </div>
           </div>
         </div>
 
         {/* Action Buttons Row */}
         <div className="flex items-center gap-2.5 pb-2 shrink-0">
           <button
-            onClick={() => alert("Edit Profile")}
-            className="w-10 h-10 rounded-xl bg-card border border-border/80 hover:bg-secondary text-foreground flex items-center justify-center shadow-sm transition-all cursor-pointer"
+            onClick={handleOpenEditModal}
+            className="h-10 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center gap-2 shadow-md hover:opacity-90 transition-all cursor-pointer"
             title="Edit Profile"
           >
-            <Pencil className="w-4.5 h-4.5" />
+            <Pencil className="w-4 h-4" />
+            <span>Edit Profile</span>
           </button>
 
-          <button
-            onClick={() => alert("LinkedIn Profile")}
-            className="w-10 h-10 rounded-xl bg-card border border-border/80 hover:bg-secondary text-foreground flex items-center justify-center shadow-sm transition-all cursor-pointer"
-            title="LinkedIn Profile"
-          >
-            <LinkedinIcon />
-          </button>
+          {profileData.linkedin && (
+            <a
+              href={profileData.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-xl bg-card border border-border/80 hover:bg-secondary text-foreground flex items-center justify-center shadow-sm transition-all"
+              title="LinkedIn Profile"
+            >
+              <LinkedinIcon />
+            </a>
+          )}
+
+          {profileData.github && (
+            <a
+              href={profileData.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-xl bg-card border border-border/80 hover:bg-secondary text-foreground flex items-center justify-center shadow-sm transition-all"
+              title="GitHub Profile"
+            >
+              <GithubIcon />
+            </a>
+          )}
 
           <button
-            onClick={() => navigate("/dashboard/xd")}
+            onClick={() => alert("Share Profile Link")}
             className="w-10 h-10 rounded-xl bg-card border border-border/80 hover:bg-secondary text-foreground flex items-center justify-center shadow-sm transition-all cursor-pointer"
-            title="Send Message"
+            title="Share Profile"
           >
-            <MessageSquare className="w-4.5 h-4.5" />
-          </button>
-
-          <button
-            onClick={() => navigate("/dashboard/contact")}
-            className="w-10 h-10 rounded-xl bg-card border border-border/80 hover:bg-secondary text-foreground flex items-center justify-center shadow-sm transition-all cursor-pointer"
-            title="Email User"
-          >
-            <Mail className="w-4.5 h-4.5" />
+            <Share2 className="w-4.5 h-4.5" />
           </button>
 
           <button
             onClick={handleSignOut}
-            className="h-10 px-4 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 text-xs font-bold border border-red-500/20 flex items-center gap-2 transition-all cursor-pointer"
+            className="h-10 px-4 rounded-xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer"
+            title="Sign Out"
           >
             <LogOut className="w-4 h-4" />
             <span>Sign out</span>
@@ -172,89 +346,206 @@ export default function Profile() {
         </div>
       </div>
 
+      {/* Profile Bio Card */}
+      {profileData.bio && (
+        <div className="px-[2.5%] mb-8">
+          <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-xs max-w-3xl">
+            <p className="text-sm text-foreground leading-relaxed font-normal">
+              {profileData.bio}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ========================================== */}
-      {/* 3. PROFILE STATISTICS CARDS (4 Row)       */}
+      {/* 3. STATISTICS CARDS GRID (4-Columns)        */}
       {/* ========================================== */}
-      <div className="px-[2.5%] w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+      <div className="px-[2.5%] grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {statCards.map((card) => (
           <div
             key={card.id}
-            className="h-[220px] rounded-2xl bg-card border border-border/80 shadow-sm p-6 flex flex-col items-center justify-center text-center space-y-3 hover:shadow-md transition-all"
+            className="p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:shadow-md transition-all flex items-center justify-between group"
           >
-            {/* Illustration */}
-            <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center text-2xl shadow-inner`}>
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+                {card.label}
+              </span>
+              <p className="font-heading text-3xl font-extrabold text-foreground group-hover:text-primary transition-colors">
+                {card.count}
+              </p>
+            </div>
+            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform`}>
               {card.icon}
             </div>
-
-            {/* Large Count Number */}
-            <span className="font-heading text-3xl font-bold text-foreground">
-              {card.count}
-            </span>
-
-            {/* Label */}
-            <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
-              {card.label}
-            </span>
           </div>
         ))}
       </div>
 
       {/* ========================================== */}
-      {/* 4. ACTIVITY SECTION                        */}
+      {/* 4. ACTIVITY & POSTS TABS                   */}
       {/* ========================================== */}
-      <div className="px-[2.5%] w-full space-y-6">
-        <div className="flex items-center gap-4">
-          <h2 className="font-heading text-2xl font-bold text-foreground">
-            Activity
-          </h2>
-          <div className="flex-1 border-b border-border/60" />
-        </div>
-
-        {/* Activity Tabs Container */}
-        <div className="w-[240px] h-[48px] p-1 rounded-2xl bg-secondary/60 border border-border/70 flex items-center justify-between">
+      <div className="px-[2.5%] space-y-6">
+        <div className="flex items-center gap-6 border-b border-border/60 pb-3">
           <button
             onClick={() => setActiveTab("posts")}
-            className={`flex-1 h-full rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`text-base font-bold transition-colors cursor-pointer relative pb-3 -mb-3 ${
               activeTab === "posts"
-                ? "bg-card text-foreground shadow-sm"
+                ? "text-primary border-b-2 border-primary"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <span>Posts</span>
-            <span className="w-5 h-5 rounded-full bg-blue-500/10 text-blue-500 text-[10px] flex items-center justify-center font-bold">
-              0
-            </span>
+            Posts (0)
           </button>
 
           <button
             onClick={() => setActiveTab("replies")}
-            className={`flex-1 h-full rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`text-base font-bold transition-colors cursor-pointer relative pb-3 -mb-3 ${
               activeTab === "replies"
-                ? "bg-card text-foreground shadow-sm"
+                ? "text-primary border-b-2 border-primary"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <span>Replies</span>
-            <span className="w-5 h-5 rounded-full bg-secondary text-muted-foreground text-[10px] flex items-center justify-center font-bold">
-              0
-            </span>
+            Replies (0)
           </button>
         </div>
 
-        {/* Empty Activity Box */}
-        <div className="w-full min-h-[160px] rounded-2xl border-2 border-dashed border-border/60 bg-card/40 flex items-center justify-center p-8 text-center">
-          <p className="text-sm font-semibold text-muted-foreground">
-            No posts yet.
+        <div className="w-full py-16 px-6 rounded-2xl bg-card border border-border/80 shadow-sm flex flex-col items-center justify-center text-center space-y-3">
+          <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center text-muted-foreground text-2xl">
+            ✍️
+          </div>
+          <h3 className="font-heading text-lg font-bold text-foreground">
+            No {activeTab} yet
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-md">
+            When you create posts or reply to discussions across Cohort communities, they will appear here on your profile.
           </p>
         </div>
       </div>
 
       {/* ========================================== */}
-      {/* 5. FLOATING CHATBOT BUTTON                 */}
+      {/* 5. EDIT PROFILE MODAL                      */}
       {/* ========================================== */}
-      <button className="fixed bottom-8 right-[23vw] w-14 h-14 rounded-full bg-card border border-border/80 shadow-2xl flex items-center justify-center text-primary hover:scale-110 transition-transform z-40 cursor-pointer">
-        <Sparkles className="w-6 h-6 text-primary animate-pulse" />
-      </button>
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-lg rounded-3xl bg-card border border-border shadow-2xl p-6 space-y-6 relative overflow-hidden">
+            <div className="flex items-center justify-between border-b border-border/60 pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                  <Pencil className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-lg font-bold text-foreground">Edit Profile</h3>
+                  <p className="text-xs text-muted-foreground">Saved locally in your browser storage</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-secondary text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProfile} className="space-y-4">
+              {/* Full Name */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground uppercase tracking-wider">Full Name</label>
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  required
+                  className="w-full h-11 px-3.5 rounded-xl bg-secondary/60 border border-border text-foreground text-sm font-medium focus:outline-none focus:border-primary"
+                  placeholder="e.g. Shubhang Doley"
+                />
+              </div>
+
+              {/* Username */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground uppercase tracking-wider">Username</label>
+                <div className="relative flex items-center">
+                  <span className="absolute left-3.5 text-muted-foreground font-bold text-sm">@</span>
+                  <input
+                    type="text"
+                    value={editForm.username}
+                    onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                    required
+                    className="w-full h-11 pl-8 pr-3.5 rounded-xl bg-secondary/60 border border-border text-foreground text-sm font-medium focus:outline-none focus:border-primary"
+                    placeholder="shubhang24"
+                  />
+                </div>
+              </div>
+
+              {/* Department / Branch */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground uppercase tracking-wider">Department & Year</label>
+                <input
+                  type="text"
+                  value={editForm.department}
+                  onChange={(e) => setEditForm({ ...editForm, department: e.target.value })}
+                  className="w-full h-11 px-3.5 rounded-xl bg-secondary/60 border border-border text-foreground text-sm font-medium focus:outline-none focus:border-primary"
+                  placeholder="e.g. Computer Engineering (TE)"
+                />
+              </div>
+
+              {/* Bio */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground uppercase tracking-wider">Bio / Tagline</label>
+                <textarea
+                  value={editForm.bio}
+                  onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                  rows={3}
+                  className="w-full p-3 rounded-xl bg-secondary/60 border border-border text-foreground text-sm font-medium focus:outline-none focus:border-primary resize-none"
+                  placeholder="Write a short tagline..."
+                />
+              </div>
+
+              {/* LinkedIn & GitHub */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-foreground uppercase tracking-wider">LinkedIn URL</label>
+                  <input
+                    type="url"
+                    value={editForm.linkedin}
+                    onChange={(e) => setEditForm({ ...editForm, linkedin: e.target.value })}
+                    className="w-full h-10 px-3 rounded-xl bg-secondary/60 border border-border text-foreground text-xs font-medium focus:outline-none focus:border-primary"
+                    placeholder="https://linkedin.com/in/..."
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-foreground uppercase tracking-wider">GitHub URL</label>
+                  <input
+                    type="url"
+                    value={editForm.github}
+                    onChange={(e) => setEditForm({ ...editForm, github: e.target.value })}
+                    className="w-full h-10 px-3 rounded-xl bg-secondary/60 border border-border text-foreground text-xs font-medium focus:outline-none focus:border-primary"
+                    placeholder="https://github.com/..."
+                  />
+                </div>
+              </div>
+
+              {/* Modal Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/60">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="h-10 px-4 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-semibold text-xs cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="h-10 px-5 rounded-xl bg-primary hover:opacity-90 text-primary-foreground font-bold text-xs flex items-center gap-1.5 shadow-md cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
