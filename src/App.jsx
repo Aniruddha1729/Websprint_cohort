@@ -73,7 +73,7 @@ export default function App() {
                   <Route path="contact" element={<ContactUs />} />
                   <Route path="profile" element={<Profile />} />
                   <Route path="profile/:username" element={<Profile />} />
-                  <Route path="arcade" element={<NonAdminRoute><Arcade /></NonAdminRoute>} />
+                  <Route path="arcade" element={<Arcade />} />
                   <Route path="admins" element={<AdminRoute><Admins /></AdminRoute>} />
                 </Route>
 
