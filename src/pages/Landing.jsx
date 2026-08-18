@@ -1,11 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Users, MessageSquare, Map, Calendar, Shield, Layout, Globe, Activity } from "lucide-react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import LiquidEther from "../components/ui/LiquidEther";
 import CurvedLoop from "../components/ui/CurvedLoop";
+import { useAuth } from "../components/providers/AuthProvider";
 
 export default function Landing() {
+  const { bypassLogin } = useAuth();
+  const navigate = useNavigate();
+
+  const handleBypass = () => {
+    bypassLogin("student");
+    navigate("/dashboard");
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col font-body">
       <Navbar />
@@ -51,9 +60,12 @@ export default function Landing() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <Link to="/login" className="px-8 py-3.5 rounded-xl bg-foreground text-background font-semibold text-[15px] hover:opacity-90 shadow-lg shadow-primary/20 transition-all active:scale-95">
+            <button
+              onClick={handleBypass}
+              className="px-8 py-3.5 rounded-xl bg-foreground text-background font-semibold text-[15px] hover:opacity-90 shadow-lg shadow-primary/20 transition-all active:scale-95 cursor-pointer"
+            >
               Get Started
-            </Link>
+            </button>
             <a href="#features" className="px-6 py-3.5 rounded-xl bg-background/70 border border-border text-foreground font-semibold text-[15px] hover:bg-secondary backdrop-blur-md transition-all active:scale-95">
               Explore platform
             </a>

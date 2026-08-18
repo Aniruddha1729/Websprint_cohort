@@ -1,11 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";
-
-// TODO: Replace with ThemeProvider when fully implemented
-const useTheme = () => ({ theme: "dark", toggleTheme: () => {} });
+import { useTheme } from "../providers/ThemeProvider";
+import { useAuth } from "../providers/AuthProvider";
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const { bypassLogin } = useAuth();
+  const navigate = useNavigate();
+
+  const handleGoogleSignIn = () => {
+    bypassLogin("student");
+    navigate("/dashboard");
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/40 backdrop-blur-md">
@@ -28,12 +34,12 @@ export default function Navbar() {
             {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
           </button>
           
-          <Link
-            to="/login"
-            className="flex items-center px-4 py-2 text-[13px] font-semibold bg-secondary/70 border border-border rounded-lg hover:bg-secondary/90 transition-colors"
+          <button
+            onClick={handleGoogleSignIn}
+            className="flex items-center px-4 py-2 text-[13px] font-semibold bg-secondary/70 border border-border rounded-lg hover:bg-secondary/90 transition-colors cursor-pointer"
           >
             Sign in with Google
-          </Link>
+          </button>
         </div>
       </div>
     </nav>

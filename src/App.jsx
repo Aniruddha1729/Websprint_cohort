@@ -63,8 +63,9 @@ export default function App() {
                   <Route path="communities/:clubusername" element={<CommunityDetail />} />
                   <Route path="xd" element={<XD />} />
                   <Route path="map" element={<CampusMap />} />
-                  <Route path="network" element={<Placements />} />
+                  <Route path="network" element={<Connect />} />
                   <Route path="connect" element={<Connect />} />
+                  <Route path="placements" element={<Placements />} />
                   <Route path="collaborate" element={<Navigate to="/dashboard/connect" replace />} />
                   <Route path="exchange" element={<Navigate to="/dashboard/xd" replace />} />
                   <Route path="calendar" element={<AcademicCalendar />} />
