@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   MapPin,
   Navigation,
@@ -265,10 +266,14 @@ export default function CampusMap() {
               </p>
 
               <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground font-medium">
-                <div className="flex items-center gap-1.5 text-foreground font-semibold">
+                <Link
+                  to={`/dashboard/profile/${selectedMarker.user.includes("@") ? selectedMarker.user.split("@")[1].replace(")", "") : "shravan24"}`}
+                  className="flex items-center gap-1.5 text-foreground font-semibold hover:text-primary transition-colors cursor-pointer"
+                  title="View student profile"
+                >
                   <User className="w-3.5 h-3.5 text-primary" />
                   <span>{selectedMarker.user}</span>
-                </div>
+                </Link>
                 <a
                   href={`https://maps.google.com/?q=${selectedMarker.lat},${selectedMarker.lng}`}
                   target="_blank"

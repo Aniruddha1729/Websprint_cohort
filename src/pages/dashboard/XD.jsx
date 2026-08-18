@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Search, ShieldCheck, Send, Sparkles, Lock, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, ShieldCheck, Send, Sparkles, Lock, ArrowLeft, ExternalLink } from "lucide-react";
 
 export default function XD() {
   const [searchMember, setSearchMember] = useState("");
@@ -196,15 +197,24 @@ export default function XD() {
                   >
                     <ArrowLeft className="w-4 h-4" />
                   </button>
+                  <Link
+                  to={`/dashboard/profile/${selectedUser.username.replace('@', '')}`}
+                  className="flex items-center gap-3 group cursor-pointer"
+                  title="View full student profile"
+                >
                   <div
-                    className={`w-9 h-9 rounded-full ${selectedUser.avatarBg} text-white font-bold text-sm flex items-center justify-center shrink-0`}
+                    className={`w-9 h-9 rounded-full ${selectedUser.avatarBg} text-white font-bold text-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}
                   >
                     {selectedUser.avatarContent}
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-foreground">{selectedUser.name}</h3>
+                    <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors flex items-center gap-1">
+                      <span>{selectedUser.name}</span>
+                      <ExternalLink className="w-3 h-3 text-muted-foreground" />
+                    </h3>
                     <p className="text-[11px] text-muted-foreground">{selectedUser.username}</p>
                   </div>
+                </Link>
                 </div>
 
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-semibold border border-blue-500/20">
